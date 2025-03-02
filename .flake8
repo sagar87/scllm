@@ -1,3 +1,4 @@
 [flake8]
 exclude =
     docs/conf.py,
+ignore = E501,W503

@@ -43,15 +43,25 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/scllm"]
 
+[tool.hatch.build.targets.wheel.sources]
+"notebooks" = "notebooks"
+
+[tool.flake8]
+ignore = ["E501"]
+max-line-length = 88  # Match black's default line length
+
 [dependency-groups]
 dev = [
     "bandit>=1.8.3",
     "black>=25.1.0",
     "flake8>=7.1.2",
+    "ipykernel>=6.29.5",
     "isort>=6.0.1",
+    "jupyter>=1.1.1",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "safety>=3.3.1",
     "sphinx<7.0.0",
     "sphinx-book-theme>=1.1.4",
+    "nbsphinx>=0.9.3",
 ]

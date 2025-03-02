@@ -6,9 +6,18 @@
 Welcome to scllm's documentation!
 ==================================================
 
-.. automodule:: random_quote_generator
-    :members:
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
+   notebooks/index
+
+
+API Reference
+==================
+
+.. automodule:: scllm
+    :members:
 
 
 Indices and tables

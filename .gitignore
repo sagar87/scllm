@@ -4,3 +4,6 @@ __pycache__
 .ruff_cache
 .DS_Store
 .venv
+docs/notebooks/data
+.ipynb_checkpoints
+.env

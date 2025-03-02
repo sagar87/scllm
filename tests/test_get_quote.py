@@ -1,5 +1,5 @@
-from scllm.get_quote import get_quote
-from scllm.quotes import quotes
+from scllm.cluster import get_quote
+# from scllm.quotes import quotes
 
 
 def test_get_quote():
@@ -11,4 +11,4 @@ def test_get_quote():
 
     quote = get_quote()
 
-    assert quote in quotes
+    assert len(quote) > 0

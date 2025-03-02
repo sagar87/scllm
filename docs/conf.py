@@ -34,6 +34,7 @@ release = "0.1.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx_book_theme",
+    "nbsphinx",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -43,6 +44,10 @@ templates_path = ["_templates"]
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+# nbsphinx configuration
+nbsphinx_execute = 'auto'  # Execute notebooks automatically during docs build
+nbsphinx_allow_errors = True  # Continue building docs if cell execution fails
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -54,7 +59,7 @@ html_theme = "sphinx_book_theme"
 
 # Theme options
 html_theme_options = {
-    "repository_url": "https://github.com/haraldvohringer/scllm",
+    "repository_url": "https://sagar87.github.io/scllm",
     "use_repository_button": True,
     "use_issues_button": True,
     "use_edit_page_button": True,
