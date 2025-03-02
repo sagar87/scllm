@@ -59,7 +59,7 @@ html_theme = "sphinx_book_theme"
 
 # Theme options
 html_theme_options = {
-    "repository_url": "https://sagar87.github.io/scllm",
+    "repository_url": "https://github.com/sagar87/scllm",
     "use_repository_button": True,
     "use_issues_button": True,
     "use_edit_page_button": True,

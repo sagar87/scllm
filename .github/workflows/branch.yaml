@@ -39,9 +39,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --dev
       - name: Run black
-        run: uv run black . --check
+        run: uv run black src --check
       - name: Run isort
-        run: uv run isort . --check-only --profile black
+        run: uv run isort src --check-only --profile black
       - name: Run flake8
         run: uv run flake8 src
       - name: Run bandit
