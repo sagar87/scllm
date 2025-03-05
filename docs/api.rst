@@ -6,4 +6,4 @@ API Reference
    :toctree: _autosummary
    :recursive:
 
-   scllm
+   scllm.tl

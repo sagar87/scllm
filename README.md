@@ -29,7 +29,7 @@ uv pip install scllm
 ```python
 import os
 
-# Enter the API 
+# Enter your API key for ChatGPT
 os.environ["OPENAI_API_KEY"] = "Enter your API key here."
 
 import scanpy as sc
