@@ -2,5 +2,8 @@
 API Reference
 =============
 
-.. automodule:: scllm
-    :members:
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
+
+   scllm
