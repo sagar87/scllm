@@ -45,8 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/scllm.tl';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="scllm.tl.chains" href="scllm.tl.chains.html" />
-    <link rel="prev" title="scllm.cluster" href="scllm.cluster.html" />
+    <link rel="prev" title="API Reference" href="../api.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -157,17 +156,7 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../api.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="scllm.html">scllm</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="scllm.cluster.html">scllm.cluster</a></li>
-<li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">scllm.tl</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="scllm.tl.chains.html">scllm.tl.chains</a></li>
-<li class="toctree-l4"><a class="reference internal" href="scllm.tl.cluster_annotation.html">scllm.tl.cluster_annotation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="scllm.tl.parser.html">scllm.tl.parser</a></li>
-<li class="toctree-l4"><a class="reference internal" href="scllm.tl.prompts.html">scllm.tl.prompts</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">scllm.tl</a></li>
 </ul>
 </details></li>
 </ul>
@@ -359,7 +348,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -375,6 +366,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scllm.tl.annotate_cluster"><code class="docutils literal notranslate"><span class="pre">annotate_cluster()</span></code></a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -386,24 +385,52 @@ document.write(`
                   
   <section id="module-scllm.tl">
 <span id="scllm-tl"></span><h1>scllm.tl<a class="headerlink" href="#module-scllm.tl" title="Permalink to this heading">#</a></h1>
-<p class="rubric">Modules</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="scllm.tl.chains.html#module-scllm.tl.chains" title="scllm.tl.chains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scllm.tl.chains</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="scllm.tl.cluster_annotation.html#module-scllm.tl.cluster_annotation" title="scllm.tl.cluster_annotation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scllm.tl.cluster_annotation</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="scllm.tl.parser.html#module-scllm.tl.parser" title="scllm.tl.parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scllm.tl.parser</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="scllm.tl.prompts.html#module-scllm.tl.prompts" title="scllm.tl.prompts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scllm.tl.prompts</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="scllm.tl.annotate_cluster">
+<span class="sig-prename descclassname"><span class="pre">scllm.tl.</span></span><span class="sig-name descname"><span class="pre">annotate_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AnnData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseLanguageModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'scllm_annotation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_genes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AnnData</span></span></span><a class="headerlink" href="#scllm.tl.annotate_cluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Annotate cell clusters using marker genes and LLM-based analysis.</p>
+<p>This function performs differential expression analysis to identify marker genes
+for each cluster, then uses a language model to annotate the cell types based
+on these markers. It supports multiple sampling runs to assess annotation stability.</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>adata<span class="classifier">sc.AnnData</span></dt><dd><p>AnnData object containing single-cell data</p>
+</dd>
+<dt>cluster_key<span class="classifier">str</span></dt><dd><p>Key in adata.obs containing cluster labels</p>
+</dd>
+<dt>llm<span class="classifier">BaseLanguageModel</span></dt><dd><p>Language model instance for cell type annotation</p>
+</dd>
+<dt>num_samples<span class="classifier">int, default=1</span></dt><dd><p>Number of times to run the annotation to assess stability</p>
+</dd>
+<dt>key_added<span class="classifier">str, default=”scllm_annotation”</span></dt><dd><p>Key under which to store the annotations in adata.obs</p>
+</dd>
+<dt>top_genes<span class="classifier">int, default=10</span></dt><dd><p>Number of top marker genes to consider for each cluster</p>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs</dt><dd><p>Additional arguments passed to sc.tl.rank_genes_groups</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>sc.AnnData</dt><dd><p>AnnData object with added annotations in adata.obs[key_added] and
+detailed annotation results in adata.uns[f”scllm_{cluster_key}”]</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s2">&quot;data.h5ad&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adata</span> <span class="o">=</span> <span class="n">annotate_cluster</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">cluster_key</span><span class="o">=</span><span class="s2">&quot;leiden&quot;</span><span class="p">,</span> <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">)</span>
+</pre></div>
 </div>
+</section>
+</dd></dl>
+
 </section>
 
 
@@ -418,22 +445,13 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="scllm.cluster.html"
+       href="../api.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">scllm.cluster</p>
+        <p class="prev-next-title">API Reference</p>
       </div>
-    </a>
-    <a class="right-next"
-       href="scllm.tl.chains.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">scllm.tl.chains</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -441,6 +459,21 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scllm.tl.annotate_cluster"><code class="docutils literal notranslate"><span class="pre">annotate_cluster()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
