@@ -7,17 +7,18 @@ Welcome to scllm's documentation!
 ==================================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :hidden:
+   :caption: Tutorials:
 
-   notebooks/index
+   notebooks/cell_types
 
 
-API Reference
-==================
+.. toctree::
+   :hidden:
+   :caption: API Reference:
 
-.. automodule:: scllm
-    :members:
+   api
+
 
 
 Indices and tables
