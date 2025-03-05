@@ -15,3 +15,12 @@ identify_cell_type = HumanMessagePromptTemplate.from_template(
 CellAnnotationPrompt = ChatPromptTemplate.from_messages(
     [single_cell_analyst, identify_cell_type]
 )
+
+
+identify_factor = HumanMessagePromptTemplate.from_template(
+    "Identify the most likely cell type given the following genes: {genes}. {format_instructions}"
+)
+
+FactorAnnotationPrompt = ChatPromptTemplate.from_messages(
+    [single_cell_analyst, identify_factor]
+)
