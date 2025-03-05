@@ -1,57 +1,37 @@
-from typing import List
-
+import pandas as pd
 import scanpy as sc
-from anndata import AnnData
-from langchain.prompts import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    SystemMessagePromptTemplate,
-)
+from langchain_core.language_models import BaseLanguageModel
 
-# from langchain.schema.runnable import RunnableEach
-from langchain_core.output_parsers import PydanticOutputParser, StrOutputParser
-from langchain_core.runnables.base import RunnableEach, RunnableLambda, RunnableParallel
-from langchain_core.runnables.branch import RunnableBranch
-from pydantic import BaseModel, Field
+from .chains import CellTypeAnnotationChain
 
+# def _analyze_genelist(gene_list: List[str], format_instructions: str):
+#     prompt_template = ChatPromptTemplate.from_messages(
+#         [
+#             (
+#                 "system",
+#                 "You are an expert biologist with extensive knowledge in single cell RNA-seq analysis.",
+#             ),
+#             (
+#                 "human",
+#                 "Identify the most likely cell type given the following genes: {genes}. {format_instructions}",
+#             ),
+#         ]
+#     )
 
-class CellType(BaseModel):
-    cell_type: str = Field(description="The most likely cell type.")
-    confidence: float = Field(
-        description="The confidence in the cell type. Range from 0 to 1."
-    )
-    marker_genes: List[str] = Field(
-        description="The marker genes for the cell type. List only genes that are expressed in the cell type."
-    )
-
-
-def _analyze_genelist(gene_list: List[str], format_instructions: str):
-    prompt_template = ChatPromptTemplate.from_messages(
-        [
-            (
-                "system",
-                "You are an expert biologist with extensive knowledge in single cell RNA-seq analysis.",
-            ),
-            (
-                "human",
-                "Identify the most likely cell type given the following genes: {genes}. {format_instructions}",
-            ),
-        ]
-    )
-
-    return prompt_template.format_prompt(
-        genes=", ".join(gene_list), format_instructions=format_instructions
-    )
+#     return prompt_template.format_prompt(
+#         genes=", ".join(gene_list), format_instructions=format_instructions
+#     )
 
 
 def annotate_cluster(
-    llm,
     adata: sc.AnnData,
     cluster_key: str,
+    llm: BaseLanguageModel,
     num_samples: int = 1,
     use_raw: bool = False,
+    key_added: str = "scllm_annotation",
     top_genes: int = 10,
-) -> AnnData:
+) -> sc.AnnData:
     """
     Annotate a cluster with a cell type
 
@@ -65,10 +45,10 @@ def annotate_cluster(
         key_added=f"{cluster_key}_rank_genes_groups",
     )
 
-    # create a dictionary mapping cluster keys to their top genes { str: [] }
-    cluster_genes = {}
+    # create the input data for the input chain
+    cluster_data = []
     for group in adata.obs[cluster_key].unique():
-        cluster_genes[group] = (
+        genes = (
             sc.get.rank_genes_groups_df(
                 adata, group=group, key=f"{cluster_key}_rank_genes_groups"
             )
@@ -76,17 +56,20 @@ def annotate_cluster(
             .names.tolist()
         )
 
-    output_parser = PydanticOutputParser(pydantic_object=CellType)
-    cell_type_branch = (
-        RunnableLambda(
-            lambda x: _analyze_genelist(x, output_parser.get_format_instructions())
-        )
-        | llm
-        | output_parser
-    )
-    chain = RunnableLambda(lambda x: x * num_samples) | RunnableEach(
-        bound=cell_type_branch
-    )
-    res = chain.invoke(list(cluster_genes.values()))
+        cluster_data.append({"cluster": group, "genes": genes})
 
-    return res
+    out = [
+        pd.DataFrame(CellTypeAnnotationChain(llm).invoke(cluster_data)).assign(init=1)
+        for i in range(num_samples)
+    ]
+    df = pd.concat(out)
+
+    mapping = (
+        pd.crosstab(df["cluster"], df["cell_type"])
+        .agg(["idxmax", "max"], axis=1)
+        .loc[:, "idxmax"]
+        .to_dict()
+    )
+
+    adata.obs[key_added] = adata.obs[cluster_key].astype(str).map(mapping)
+    adata.uns[f"scllm_{cluster_key}"] = df
