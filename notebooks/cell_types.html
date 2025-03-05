@@ -518,11 +518,94 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">leiden</span><span class="p">(</span><span class="n">ang</span><span class="p">,</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;igraph&quot;</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">ang</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="s1">&#39;cell_type&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_cell_types_16_0.png" src="../_images/notebooks_cell_types_16_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span><span class="n">ang</span><span class="p">,</span> <span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">use_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:435: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;names&#34;] = self.var_names[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:437: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;scores&#34;] = scores[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:440: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;pvals&#34;] = pvals[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:450: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;pvals_adj&#34;] = pvals_adj[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:461: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;logfoldchanges&#34;] = np.log2(
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:435: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;names&#34;] = self.var_names[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:437: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;scores&#34;] = scores[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:440: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;pvals&#34;] = pvals[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:450: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;pvals_adj&#34;] = pvals_adj[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:461: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;logfoldchanges&#34;] = np.log2(
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:435: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;names&#34;] = self.var_names[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:437: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;scores&#34;] = scores[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:440: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;pvals&#34;] = pvals[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:450: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;pvals_adj&#34;] = pvals_adj[global_indices]
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:461: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  self.stats[group_name, &#34;logfoldchanges&#34;] = np.log2(
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">ang</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="s1">&#39;scllm_annotation&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_cell_types_18_0.png" src="../_images/notebooks_cell_types_18_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>sc.tl.rank_genes_groups
 </pre></div>
 </div>
 </div>
@@ -531,35 +614,125 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[32]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">sc</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">tl</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">leiden</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">ang</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">flavor</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">igraph</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">n_iterations</span><span class="ansi-yellow-bg">=</span><span class="ansi-green-fg ansi-yellow-bg">2</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-red-fg">Signature:</span>
+sc.tl.rank_genes_groups(
+    adata: <span class="ansi-yellow-fg">&#39;AnnData&#39;</span>,
+    groupby: <span class="ansi-yellow-fg">&#39;str&#39;</span>,
+    *,
+    mask_var: <span class="ansi-yellow-fg">&#39;NDArray[np.bool_] | str | None&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
+    use_raw: <span class="ansi-yellow-fg">&#39;bool | None&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
+    groups: <span class="ansi-yellow-fg">&#34;Literal[&#39;all&#39;] | Iterable[str]&#34;</span> = <span class="ansi-yellow-fg">&#39;all&#39;</span>,
+    reference: <span class="ansi-yellow-fg">&#39;str&#39;</span> = <span class="ansi-yellow-fg">&#39;rest&#39;</span>,
+    n_genes: <span class="ansi-yellow-fg">&#39;int | None&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
+    rankby_abs: <span class="ansi-yellow-fg">&#39;bool&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">False</span>,
+    pts: <span class="ansi-yellow-fg">&#39;bool&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">False</span>,
+    key_added: <span class="ansi-yellow-fg">&#39;str | None&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
+    copy: <span class="ansi-yellow-fg">&#39;bool&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">False</span>,
+    method: <span class="ansi-yellow-fg">&#39;_Method | None&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
+    corr_method: <span class="ansi-yellow-fg">&#39;_CorrMethod&#39;</span> = <span class="ansi-yellow-fg">&#39;benjamini-hochberg&#39;</span>,
+    tie_correct: <span class="ansi-yellow-fg">&#39;bool&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">False</span>,
+    layer: <span class="ansi-yellow-fg">&#39;str | None&#39;</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
+    **kwds,
+) -&gt; <span class="ansi-yellow-fg">&#39;AnnData | None&#39;</span>
+<span class="ansi-red-fg">Docstring:</span>
+Rank genes for characterizing groups.
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_leiden.py:151</span>, in <span class="ansi-cyan-fg">leiden</span><span class="ansi-blue-fg">(adata, resolution, restrict_to, random_state, key_added, adjacency, directed, use_weights, n_iterations, partition_type, neighbors_key, obsp, copy, flavor, **clustering_args)</span>
-<span class="ansi-green-fg">    149</span> <span style="color: rgb(95,135,135)"># are we clustering a user-provided graph or the default AnnData one?</span>
-<span class="ansi-green-fg">    150</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> adjacency <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">151</span>     adjacency = <span class="ansi-yellow-bg">_utils</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">_choose_graph</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">adata</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">obsp</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">neighbors_key</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    152</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> restrict_to <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">    153</span>     restrict_key, restrict_categories = restrict_to
+Expects logarithmized data.
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/_utils/__init__.py:1157</span>, in <span class="ansi-cyan-fg">_choose_graph</span><span class="ansi-blue-fg">(adata, obsp, neighbors_key)</span>
-<span class="ansi-green-fg">   1155</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> adata.obsp[obsp]
-<span class="ansi-green-fg">   1156</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
-<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">1157</span>     neighbors = <span class="ansi-yellow-bg">NeighborsView</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">adata</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">neighbors_key</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">   1158</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">connectivities</span><span class="ansi-yellow-fg">&#34;</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> neighbors:
-<span class="ansi-green-fg">   1159</span>         msg = (
-<span class="ansi-green-fg">   1160</span>             <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">You need to run `pp.neighbors` first to compute a neighborhood graph.</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">   1161</span>         )
+Parameters
+----------
+adata : &#39;AnnData&#39;
+    Annotated data matrix.
+groupby : &#39;str&#39;
+    The key of the observations grouping to consider.
+mask_var : &#39;NDArray[np.bool_] | str | None&#39;, optional (default: None)
+    Select subset of genes to use in statistical tests.
+use_raw : &#39;bool | None&#39;, optional (default: None)
+    Use `raw` attribute of `adata` if present.
+layer : &#39;str | None&#39;, optional (default: None)
+    Key from `adata.layers` whose value will be used to perform tests on.
+groups : &#34;Literal[&#39;all&#39;] | Iterable[str]&#34;, optional (default: &#39;all&#39;)
+    Subset of groups, e.g. [`&#39;g1&#39;`, `&#39;g2&#39;`, `&#39;g3&#39;`], to which comparison
+    shall be restricted, or `&#39;all&#39;` (default), for all groups. Note that if
+    `reference=&#39;rest&#39;` all groups will still be used as the reference, not
+    just those specified in `groups`.
+reference : &#39;str&#39;, optional (default: &#39;rest&#39;)
+    If `&#39;rest&#39;`, compare each group to the union of the rest of the group.
+    If a group identifier, compare with respect to this group.
+n_genes : &#39;int | None&#39;, optional (default: None)
+    The number of genes that appear in the returned tables.
+    Defaults to all genes.
+method : &#39;_Method | None&#39;, optional (default: None)
+    The default method is `&#39;t-test&#39;`,
+    `&#39;t-test_overestim_var&#39;` overestimates variance of each group,
+    `&#39;wilcoxon&#39;` uses Wilcoxon rank-sum,
+    `&#39;logreg&#39;` uses logistic regression. See :cite:t:`Ntranos2019`,
+    `here &lt;https://github.com/scverse/scanpy/issues/95&gt;`__ and `here
+    &lt;https://www.nxn.se/valent/2018/3/5/actionable-scrna-seq-clusters&gt;`__,
+    for why this is meaningful.
+corr_method : &#39;_CorrMethod&#39;, optional (default: &#39;benjamini-hochberg&#39;)
+    p-value correction method.
+    Used only for `&#39;t-test&#39;`, `&#39;t-test_overestim_var&#39;`, and `&#39;wilcoxon&#39;`.
+tie_correct : &#39;bool&#39;, optional (default: False)
+    Use tie correction for `&#39;wilcoxon&#39;` scores.
+    Used only for `&#39;wilcoxon&#39;`.
+rankby_abs : &#39;bool&#39;, optional (default: False)
+    Rank genes by the absolute value of the score, not by the
+    score. The returned scores are never the absolute values.
+pts : &#39;bool&#39;, optional (default: False)
+    Compute the fraction of cells expressing the genes.
+key_added : &#39;str | None&#39;, optional (default: None)
+    The key in `adata.uns` information is saved to.
+copy : &#39;bool&#39;, optional (default: False)
+    Whether to copy `adata` or modify it inplace.
+kwds : _empty
+    Are passed to test methods. Currently this affects only parameters that
+    are passed to :class:`sklearn.linear_model.LogisticRegression`.
+    For instance, you can pass `penalty=&#39;l1&#39;` to try to come up with a
+    minimal set of genes that are good predictors (sparse solution meaning
+    few non-zero fitted coefficients).
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/_utils/__init__.py:1084</span>, in <span class="ansi-cyan-fg">NeighborsView.__init__</span><span class="ansi-blue-fg">(self, adata, key)</span>
-<span class="ansi-green-fg">   1082</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">neighbors</span><span class="ansi-yellow-fg">&#34;</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> adata.uns:
-<span class="ansi-green-fg">   1083</span>     msg = <span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">No </span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">neighbors</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg"> in .uns</span><span class="ansi-yellow-fg">&#39;</span>
-<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">1084</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(msg)
-<span class="ansi-green-fg">   1085</span> <span style="color: rgb(0,135,0)">self</span>._neighbors_dict = adata.uns[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">neighbors</span><span class="ansi-yellow-fg">&#34;</span>]
-<span class="ansi-green-fg">   1086</span> <span style="color: rgb(0,135,0)">self</span>._conns_key = <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">connectivities</span><span class="ansi-yellow-fg">&#34;</span>
+Returns
+-------
+Returns `None` if `copy=False`, else returns an `AnnData` object. Sets the following fields:
 
-<span class="ansi-red-fg">KeyError</span>: &#39;No &#34;neighbors&#34; in .uns&#39;
+`adata.uns[&#39;rank_genes_groups&#39; | key_added][&#39;names&#39;]` : structured :class:`numpy.ndarray` (dtype `object`)
+    Structured array to be indexed by group id storing the gene
+    names. Ordered according to scores.
+`adata.uns[&#39;rank_genes_groups&#39; | key_added][&#39;scores&#39;]` : structured :class:`numpy.ndarray` (dtype `object`)
+    Structured array to be indexed by group id storing the z-score
+    underlying the computation of a p-value for each gene for each
+    group. Ordered according to scores.
+`adata.uns[&#39;rank_genes_groups&#39; | key_added][&#39;logfoldchanges&#39;]` : structured :class:`numpy.ndarray` (dtype `object`)
+    Structured array to be indexed by group id storing the log2
+    fold change for each gene for each group. Ordered according to
+    scores. Only provided if method is &#39;t-test&#39; like.
+    Note: this is an approximation calculated from mean-log values.
+`adata.uns[&#39;rank_genes_groups&#39; | key_added][&#39;pvals&#39;]` : structured :class:`numpy.ndarray` (dtype `float`)
+    p-values.
+`adata.uns[&#39;rank_genes_groups&#39; | key_added][&#39;pvals_adj&#39;]` : structured :class:`numpy.ndarray` (dtype `float`)
+    Corrected p-values.
+`adata.uns[&#39;rank_genes_groups&#39; | key_added][&#39;pts&#39;]` : :class:`pandas.DataFrame` (dtype `float`)
+    Fraction of cells expressing the genes for each group.
+`adata.uns[&#39;rank_genes_groups&#39; | key_added][&#39;pts_rest&#39;]` : :class:`pandas.DataFrame` (dtype `float`)
+    Only if `reference` is set to `&#39;rest&#39;`.
+    Fraction of cells from the union of the rest of each group
+    expressing the genes.
+
+Notes
+-----
+There are slight inconsistencies depending on whether sparse
+or dense data are passed. See `here &lt;https://github.com/scverse/scanpy/blob/main/tests/test_rank_genes_groups.py&gt;`__.
+
+Examples
+--------
+&gt;&gt;&gt; import scanpy as sc
+&gt;&gt;&gt; adata = sc.datasets.pbmc68k_reduced()
+&gt;&gt;&gt; sc.tl.rank_genes_groups(adata, &#39;bulk_labels&#39;, method=&#39;wilcoxon&#39;)
+&gt;&gt;&gt; # to visualize the results
+&gt;&gt;&gt; sc.pl.rank_genes_groups(adata)
+<span class="ansi-red-fg">File:</span>      ~/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py
+<span class="ansi-red-fg">Type:</span>      function
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
