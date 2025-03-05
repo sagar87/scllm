@@ -6,9 +6,9 @@ A Python package for annotating single-cell RNA sequencing data using Large Lang
 [![Documentation](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://haraldvohringer.com/scllm/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Overview
+## Overview: LangChain 🤝 scanpy
 
-scllm leverages the power of Large Language Models to automatically annotate cell types in single-cell RNA sequencing data. It integrates seamlessly with scanpy and provides an intuitive interface for cell type annotation based on marker gene expression.
+scllm leverages the power of Large Language Models to automatically annotate cell types in single-cell RNA sequencing data. It integrates seamlessly with scanpy and provides an intuitive interface for cell type annotation, factor analalysis and differential expression analysis based on marker gene expression.
 
 ## Installation
 
@@ -18,7 +18,7 @@ You can install scllm using pip:
 pip install scllm
 ```
 
-Or using uv:
+Or using uv 🚀:
 
 ```bash
 uv pip install scllm
@@ -27,6 +27,11 @@ uv pip install scllm
 ## Quick Start
 
 ```python
+import os
+
+# Enter the API 
+os.environ["OPENAI_API_KEY"] = "Enter your API key here."
+
 import scanpy as sc
 import scllm
 
@@ -38,10 +43,10 @@ sc.tl.leiden(adata)
 
 # Initialize your LLM (example with OpenAI)
 from langchain_openai import ChatOpenAI
-llm = ChatOpenAI()
+llm = ChatOpenAI(temperature=0.0, model="gpt-4o-mini")
 
 # Annotate clusters
-adata = scllm.annotate_cluster(llm, adata, cluster_key='leiden')
+adata = scllm.annotate_cluster(adata, 'leiden', llm)
 
 # Access annotations
 print(adata.obs['leiden_annotated'])
