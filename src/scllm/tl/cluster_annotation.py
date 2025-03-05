@@ -2,7 +2,7 @@ import pandas as pd
 import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
 
-from .chains import CellTypeAnnotationChain
+from .chains import CellTypeAnnotationChain, construct_term_chain
 
 
 def annotate_cluster(
@@ -71,18 +71,15 @@ def annotate_cluster(
             .head(top_genes)
             .names.tolist()
         )
+        for i in range(num_samples):
+            cluster_data.append({"cluster": group, "genes": genes, "init": i})
 
-        cluster_data.append({"cluster": group, "genes": genes})
-
-    out = [
-        pd.DataFrame(CellTypeAnnotationChain(llm).invoke(cluster_data)).assign(init=1)
-        for i in range(num_samples)
-    ]
-    df = pd.concat(out)
+    chain = construct_term_chain(llm, term="cell type", passthrough=["cluster", "init"])
+    df = pd.DataFrame(chain.invoke(cluster_data))
 
     # map cluster id's to celltype
     mapping = (
-        pd.crosstab(df["cluster"], df["cell_type"])
+        pd.crosstab(df["cluster"], df["target"])
         .agg(["idxmax", "max"], axis=1)
         .loc[:, "idxmax"]
         .to_dict()

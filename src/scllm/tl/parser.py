@@ -7,3 +7,12 @@ class CellType(BaseModel):
 
 
 CellTypeParser = PydanticOutputParser(pydantic_object=CellType)
+
+
+def construct_term_parser(term: str):
+    description = f"Extract the most likely {term}."
+
+    class Term(BaseModel):
+        term: str = Field(description=description)
+
+    return PydanticOutputParser(pydantic_object=Term)
