@@ -47,7 +47,7 @@ def _create_factor_df(
         .rename(columns={"index": "gene"})
         .melt("gene", var_name="factor", value_name="weight")
         .loc[lambda df: df["factor"].isin(factors)]
-        .sort_values(by=["factor", "weight"], ascending=False if sign == "-" else True)
+        .sort_values(by=["factor", "weight"], ascending=False if sign == "+" else True)
         .groupby("factor")
         .head(top_genes)
     )
