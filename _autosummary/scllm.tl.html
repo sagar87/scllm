@@ -372,6 +372,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scllm.tl.annotate_cluster"><code class="docutils literal notranslate"><span class="pre">annotate_cluster()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scllm.tl.annotate_factor"><code class="docutils literal notranslate"><span class="pre">annotate_factor()</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -431,6 +432,55 @@ detailed annotation results in adata.uns[f”scllm_{cluster_key}”]</p>
 </section>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="scllm.tl.annotate_factor">
+<span class="sig-prename descclassname"><span class="pre">scllm.tl.</span></span><span class="sig-name descname"><span class="pre">annotate_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AnnData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varm_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseLanguageModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_added</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'scllm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_genes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AnnData</span></span></span><a class="headerlink" href="#scllm.tl.annotate_factor" title="Permalink to this definition">#</a></dt>
+<dd><p>Annotate factors using marker genes and LLM-based analysis.</p>
+<p>This function analyzes factor loadings from dimensionality reduction methods
+(e.g., PCA, NMF) and uses a language model to annotate the biological meaning
+of each factor based on its top genes.</p>
+<section id="id3">
+<h2>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>adata<span class="classifier">sc.AnnData</span></dt><dd><p>AnnData object containing factor loadings in varm</p>
+</dd>
+<dt>varm_key<span class="classifier">str</span></dt><dd><p>Key in adata.varm containing the factor loadings</p>
+</dd>
+<dt>llm<span class="classifier">BaseLanguageModel</span></dt><dd><p>Language model instance for factor annotation</p>
+</dd>
+<dt>factors<span class="classifier">list[str] | str, default=”0”</span></dt><dd><p>Factor(s) to analyze. Can be a single factor or list of factors</p>
+</dd>
+<dt>sign<span class="classifier">Literal[“+”, “-“], default=”+”</span></dt><dd><p>Whether to consider positive or negative loadings</p>
+</dd>
+<dt>num_samples<span class="classifier">int, default=1</span></dt><dd><p>Number of times to run the annotation to assess stability</p>
+</dd>
+<dt>key_added<span class="classifier">str, default=”scllm_annotation”</span></dt><dd><p>Key under which to store the annotations in adata.obs</p>
+</dd>
+<dt>top_genes<span class="classifier">int, default=10</span></dt><dd><p>Number of top genes to consider for each factor</p>
+</dd>
+<dt><a href="#id4"><span class="problematic" id="id5">**</span></a>kwargs</dt><dd><p>Additional arguments passed to the annotation chain</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h2>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<dl class="simple">
+<dt>sc.AnnData</dt><dd><p>AnnData object with added factor annotations in adata.obs[key_added]</p>
+</dd>
+</dl>
+</section>
+<section id="id7">
+<h2>Examples<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adata</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s2">&quot;data.h5ad&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adata</span> <span class="o">=</span> <span class="n">annotate_factor</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">varm_key</span><span class="o">=</span><span class="s2">&quot;pca&quot;</span><span class="p">,</span> <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span> <span class="n">factors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
 </section>
 
 
@@ -470,6 +520,7 @@ detailed annotation results in adata.uns[f”scllm_{cluster_key}”]</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scllm.tl.annotate_cluster"><code class="docutils literal notranslate"><span class="pre">annotate_cluster()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scllm.tl.annotate_factor"><code class="docutils literal notranslate"><span class="pre">annotate_factor()</span></code></a></li>
 </ul>
   </nav></div>
 
