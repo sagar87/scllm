@@ -1,4 +1,4 @@
 # from .cluster import annotate_cluster, annotate_gene_list
-from . import tl
+from . import pl, tl
 
-__all__ = ["tl"]
+__all__ = ["tl", "pl"]

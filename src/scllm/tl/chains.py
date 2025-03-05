@@ -1,7 +1,7 @@
 from langchain_core.runnables.base import RunnableEach, RunnableLambda, RunnableParallel
 
 from .parser import CellTypeParser
-from .prompts import CellAnnotationPrompt
+from .prompts import CellAnnotationPrompt, FactorAnnotationPrompt
 
 
 def CellTypeAnnotationChain(llm):
@@ -42,6 +42,30 @@ def CellTypeAnnotationChain(llm):
                     RunnableLambda(lambda x: x["genes"])
                     | RunnableLambda(
                         lambda x: CellAnnotationPrompt.format_prompt(
+                            genes=", ".join(x),
+                            format_instructions=CellTypeParser.get_format_instructions(),
+                        )
+                    )
+                    | llm
+                    | CellTypeParser
+                    | RunnableLambda(lambda x: x.cell_type)
+                ),
+            }
+        )
+    )
+
+
+def FactorAnnotationChain(llm):
+    """Create a chain for annotating cell types using marker genes."""
+    return RunnableEach(
+        bound=RunnableParallel(
+            {
+                "factor": RunnableLambda(lambda x: x["factor"]),
+                "sign": RunnableLambda(lambda x: x["sign"]),
+                "cell_type": (
+                    RunnableLambda(lambda x: x["genes"])
+                    | RunnableLambda(
+                        lambda x: FactorAnnotationPrompt.format_prompt(
                             genes=", ".join(x),
                             format_instructions=CellTypeParser.get_format_instructions(),
                         )
