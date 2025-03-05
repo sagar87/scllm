@@ -45,7 +45,7 @@ def _analyze_genelist(gene_list: List[str], format_instructions: str):
 
 
 def annotate_cluster(
-    llm, adata: sc.AnnData, cluster_key: str, use_raw: bool = False, top_genes: int = 10
+    llm, adata: sc.AnnData, cluster_key: str, num_samples:int =1, use_raw: bool = False, top_genes: int = 10, 
 ) -> AnnData:
     """
     Annotate a cluster with a cell type
@@ -79,7 +79,7 @@ def annotate_cluster(
         | llm
         | output_parser
     )
-    chain = RunnableEach(bound=cell_type_branch)
+    chain = RunnableLambda(lambda x: x * num_samples) | RunnableEach(bound=cell_type_branch)
     res = chain.invoke(list(cluster_genes.values()))
 
     return res
