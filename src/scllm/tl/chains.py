@@ -77,3 +77,19 @@ def FactorAnnotationChain(llm):
             }
         )
     )
+
+
+def DescriptionFromGeneChain(llm, prompt, parser):
+    format_instructions = parser.get_format_instructions()
+    (
+        RunnableLambda(lambda x: x["genes"])
+        | RunnableLambda(
+            lambda x: prompt.format_prompt(
+                genes=", ".join(x),
+                format_instructions=format_instructions,
+            )
+        )
+        | llm
+        | parser
+        | RunnableLambda(lambda x: x.cell_type)
+    )

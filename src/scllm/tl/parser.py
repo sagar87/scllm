@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 
 class CellType(BaseModel):
-    cell_type: str = Field(description="The most likely cell type.")
+    cell_type: str = Field(description="Extract the most likely cell type.")
 
 
 CellTypeParser = PydanticOutputParser(pydantic_object=CellType)
