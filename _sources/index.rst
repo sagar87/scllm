@@ -11,6 +11,7 @@ Welcome to scllm's documentation!
    :caption: Tutorials:
 
    notebooks/cell_types
+   notebooks/factor_analysis
 
 
 .. toctree::
