@@ -347,7 +347,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -363,6 +365,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Angelidis">Angelidis</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -376,10 +386,11 @@ document.write(`
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
 <span class="n">load_dotenv</span><span class="p">()</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scllm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
 </pre></div>
 </div>
@@ -388,7 +399,7 @@ document.write(`
 <h1>Annotate cell types<a class="headerlink" href="#Annotate-cell-types" title="Permalink to this heading">#</a></h1>
 <p>In this tutorial we will use Chat GPT to annotate cell types.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">pbmc3k_processed</span><span class="p">()</span>
@@ -396,7 +407,7 @@ document.write(`
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o-mini&quot;</span>
@@ -405,7 +416,7 @@ document.write(`
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span>
@@ -413,7 +424,7 @@ document.write(`
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -428,7 +439,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">leiden</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;igraph&quot;</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -436,7 +447,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;leiden&#39;</span><span class="p">)</span>
@@ -452,18 +463,18 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 <p>To annotate the cells we simply use the <code class="docutils literal notranslate"><span class="pre">annotate_cluster</span></code> function. This will iterate through each cluster and try to determine the most likely cell types.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span><span class="n">llm</span><span class="p">,</span> <span class="n">pbmc</span><span class="p">,</span> <span class="n">cluster_key</span><span class="o">=</span><span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;leiden_annotated&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;scllm_annotation&#39;</span><span class="p">,</span> <span class="s1">&#39;louvain&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -474,6 +485,83 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <img alt="../_images/notebooks_cell_types_10_0.png" src="../_images/notebooks_cell_types_10_0.png" />
 </div>
 </div>
+<section id="Angelidis">
+<h2>Angelidis<a class="headerlink" href="#Angelidis" title="Permalink to this heading">#</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ang</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;/Users/harald/Downloads/umap_1.h5ad&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">ang</span><span class="p">,</span> <span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;cell_type&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_cell_types_13_0.png" src="../_images/notebooks_cell_types_13_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">ang</span><span class="p">,</span> <span class="n">use_rep</span><span class="o">=</span><span class="s1">&#39;X_scPCA&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">leiden</span><span class="p">(</span><span class="n">ang</span><span class="p">,</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;igraph&quot;</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[32]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">sc</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">tl</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">leiden</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">ang</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">flavor</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">igraph</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">n_iterations</span><span class="ansi-yellow-bg">=</span><span class="ansi-green-fg ansi-yellow-bg">2</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_leiden.py:151</span>, in <span class="ansi-cyan-fg">leiden</span><span class="ansi-blue-fg">(adata, resolution, restrict_to, random_state, key_added, adjacency, directed, use_weights, n_iterations, partition_type, neighbors_key, obsp, copy, flavor, **clustering_args)</span>
+<span class="ansi-green-fg">    149</span> <span style="color: rgb(95,135,135)"># are we clustering a user-provided graph or the default AnnData one?</span>
+<span class="ansi-green-fg">    150</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> adjacency <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">151</span>     adjacency = <span class="ansi-yellow-bg">_utils</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">_choose_graph</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">adata</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">obsp</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">neighbors_key</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    152</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> restrict_to <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">    153</span>     restrict_key, restrict_categories = restrict_to
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/_utils/__init__.py:1157</span>, in <span class="ansi-cyan-fg">_choose_graph</span><span class="ansi-blue-fg">(adata, obsp, neighbors_key)</span>
+<span class="ansi-green-fg">   1155</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> adata.obsp[obsp]
+<span class="ansi-green-fg">   1156</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">1157</span>     neighbors = <span class="ansi-yellow-bg">NeighborsView</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">adata</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">neighbors_key</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">   1158</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">connectivities</span><span class="ansi-yellow-fg">&#34;</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> neighbors:
+<span class="ansi-green-fg">   1159</span>         msg = (
+<span class="ansi-green-fg">   1160</span>             <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">You need to run `pp.neighbors` first to compute a neighborhood graph.</span><span class="ansi-yellow-fg">&#34;</span>
+<span class="ansi-green-fg">   1161</span>         )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/_utils/__init__.py:1084</span>, in <span class="ansi-cyan-fg">NeighborsView.__init__</span><span class="ansi-blue-fg">(self, adata, key)</span>
+<span class="ansi-green-fg">   1082</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">neighbors</span><span class="ansi-yellow-fg">&#34;</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> adata.uns:
+<span class="ansi-green-fg">   1083</span>     msg = <span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">No </span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">neighbors</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg"> in .uns</span><span class="ansi-yellow-fg">&#39;</span>
+<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">1084</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(msg)
+<span class="ansi-green-fg">   1085</span> <span style="color: rgb(0,135,0)">self</span>._neighbors_dict = adata.uns[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">neighbors</span><span class="ansi-yellow-fg">&#34;</span>]
+<span class="ansi-green-fg">   1086</span> <span style="color: rgb(0,135,0)">self</span>._conns_key = <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">connectivities</span><span class="ansi-yellow-fg">&#34;</span>
+
+<span class="ansi-red-fg">KeyError</span>: &#39;No &#34;neighbors&#34; in .uns&#39;
+</pre></div></div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -482,6 +570,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </pre></div>
 </div>
 </div>
+</section>
 </section>
 
 
@@ -510,6 +599,21 @@ AnnData object with n_obs × n_vars = 2638 × 1838
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Angelidis">Angelidis</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
