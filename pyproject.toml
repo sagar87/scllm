@@ -1,7 +1,7 @@
 [project]
 name = "scllm"
-version = "0.1.2"
-description = "Add your description here"
+version = "0.1.3"
+description = "scllm is a Python package for single-cell analysis using LLMs."
 readme = "README.md"
 authors = [
     { name = "Harald Vohringer", email = "harald.voeh@gmail.com" }

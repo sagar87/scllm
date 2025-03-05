@@ -23,7 +23,7 @@ copyright = "2025, Harald Vohringer"
 author = "Harald Vohringer"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.0"
+release = "0.1.3"
 
 
 # -- General configuration ---------------------------------------------------
