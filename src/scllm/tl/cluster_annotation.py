@@ -1,7 +1,8 @@
+from itertools import combinations
+
 import pandas as pd
 import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
-from itertools import combinations
 
 from .chains import construct_term_chain, construct_term_comparison_chain
 from .utils import _prepare_mapping

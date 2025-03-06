@@ -2,8 +2,8 @@ from functools import partial
 
 from langchain_core.runnables.base import RunnableEach, RunnableLambda, RunnableParallel
 
-from .parser import construct_term_parser, construct_term_comparison_parser
-from .prompts import construct_term_prompt, construct_term_comparison_prompt
+from .parser import construct_term_comparison_parser, construct_term_parser
+from .prompts import construct_term_comparison_prompt, construct_term_prompt
 
 
 def construct_passthrough(passthrough: list[str]):
