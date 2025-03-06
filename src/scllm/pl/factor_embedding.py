@@ -5,13 +5,14 @@ from anndata import AnnData
 from matplotlib.axes import Axes
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+from ..tl.factor_annotation import _validate_factors
 from .utils import _set_up_cmap, _set_up_plot
 
 
 def factor_embedding(
     adata: AnnData,
-    varm_key: Union[str, None] = None,
-    factors: Union[int, List[int], None] = None,
+    varm_key: str,
+    factors: List[str] | str = "all",
     basis: str = "X_umap",
     annotation: str = "scllm_annotation",
     cmap: str = "RdBu",
@@ -67,6 +68,7 @@ def factor_embedding(
     -------
         Axes object.
     """
+    factors = _validate_factors(factors, adata.varm[varm_key].shape[1])
 
     ax = _set_up_plot(
         adata,
