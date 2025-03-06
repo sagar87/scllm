@@ -1,3 +1,5 @@
+from functools import partial
+
 from langchain_core.runnables.base import RunnableEach, RunnableLambda, RunnableParallel
 
 from .parser import CellTypeParser, construct_term_parser
@@ -9,7 +11,12 @@ from .prompts import (
 
 
 def construct_passthrough(passthrough: list[str]):
-    return {var: RunnableLambda(lambda x: x[var]) for var in passthrough}
+    def passthrough_fn(dict_in: dict, key: str):
+        return dict_in[key]
+
+    return {
+        var: RunnableLambda(partial(passthrough_fn, key=var)) for var in passthrough
+    }
 
 
 def construct_term_chain(llm, term: str, extra: str = "", passthrough: list[str] = []):
