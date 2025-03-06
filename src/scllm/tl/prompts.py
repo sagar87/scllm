@@ -8,7 +8,7 @@ from langchain.prompts import (
 def construct_term_prompt(
     term: str = "cell type",
     extra: str = "",
-    system_prompt: str = "You are an expert biologist with extensive knowledge in single cell RNA-seq analysis.",
+    system_prompt: str = "You are an expert biologist with extensive knowledge in single cell RNA-seq analysis. Be as specific as possible, without over-interpreting the data. Limit your answers to 7 words or less. ",
     human_prompt: str = "Identify the most likely {term} given the following genes: {{genes}}.\n{extra}",
     format_instructions: bool = True,
 ) -> ChatPromptTemplate:
