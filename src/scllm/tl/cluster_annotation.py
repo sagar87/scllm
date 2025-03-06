@@ -2,7 +2,7 @@ import pandas as pd
 import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
 
-from .chains import construct_term_chain
+from .chains import construct_term_chain_with_genes
 from .utils import _prepare_mapping, _validate_top_genes
 
 
@@ -29,6 +29,23 @@ def _prepare_chain_data(
         for i in range(num_samples):
             cluster_data.append({"cluster": group, "genes": genes, "init": i})
     return cluster_data
+
+
+def _prepare_var_names(df: pd.DataFrame, mapping: dict) -> dict:
+    var_names = (
+        df.groupby("term")
+        .agg({"union": list})
+        .reset_index()
+        .assign(
+            flattened=lambda df: df["union"].apply(
+                lambda xss: [x for xs in xss for x in xs], 1
+            )
+        )
+        .drop(columns=["union"])
+        .set_index("term")
+        .loc[lambda df: df.index.isin(mapping.values())]
+    ).to_dict()["flattened"]
+    return var_names
 
 
 def annotate_cluster(
@@ -95,14 +112,13 @@ def annotate_cluster(
     cluster_data = _prepare_chain_data(adata, cluster_key, top_genes, num_samples)
 
     # run the chain
-    chain = construct_term_chain(
-        llm, term=term, extra=extra, passthrough=["cluster", "init"]
-    )
+    chain = construct_term_chain_with_genes(llm, term=term, extra=extra)
     out = chain.invoke(cluster_data)
-    df = pd.DataFrame(out)
 
     # map cluster id's to celltype
-    mapping = _prepare_mapping(df, "cluster", "target")
+    df = pd.DataFrame(out)
+    mapping = _prepare_mapping(df, "cluster", "term")
+    var_names = _prepare_var_names(df, mapping)
 
     adata.obs[key_added] = adata.obs[cluster_key].astype(str).map(mapping)
-    adata.uns[key_added] = {"raw": out, "mapping": mapping}
+    adata.uns[key_added] = {"raw": out, "mapping": mapping, "var_names": var_names}
