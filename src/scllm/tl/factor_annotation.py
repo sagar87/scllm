@@ -139,7 +139,7 @@ def annotate_factor(
     # TODO: need to throw error if factors is not a list or str
     if isinstance(factors, str):
         if factors == "all":
-            factors = [str(i) for i in range(adata.obsm[varm_key].shape[1])]
+            factors = [str(i) for i in range(adata.varm[varm_key].shape[1])]
         else:
             factors = [factors]
 
