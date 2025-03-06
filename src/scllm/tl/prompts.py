@@ -4,23 +4,23 @@ from langchain.prompts import (
     SystemMessagePromptTemplate,
 )
 
-single_cell_analyst = SystemMessagePromptTemplate.from_template(
-    "You are an expert biologist with extensive knowledge in single cell RNA-seq analysis."
-)
 
-identify_cell_type = HumanMessagePromptTemplate.from_template(
-    "Identify the most likely cell type given the following genes: {genes}. {format_instructions}"
-)
+def construct_term_prompt(
+    term: str = "cell type",
+    extra: str = "",
+    system_prompt: str = "You are an expert biologist with extensive knowledge in single cell RNA-seq analysis.",
+    human_prompt: str = "Identify the most likely {term} given the following genes: {{genes}}.\n{extra}",
+    format_instructions: bool = True,
+) -> ChatPromptTemplate:
 
-CellAnnotationPrompt = ChatPromptTemplate.from_messages(
-    [single_cell_analyst, identify_cell_type]
-)
+    human_prompt = human_prompt.format(term=term, extra=extra)
 
+    if format_instructions:
+        human_prompt = human_prompt + "\n{format_instructions}"
 
-identify_factor = HumanMessagePromptTemplate.from_template(
-    "Identify the most likely cell type given the following genes: {genes}. {format_instructions}"
-)
-
-FactorAnnotationPrompt = ChatPromptTemplate.from_messages(
-    [single_cell_analyst, identify_factor]
-)
+    return ChatPromptTemplate.from_messages(
+        [
+            SystemMessagePromptTemplate.from_template(system_prompt),
+            HumanMessagePromptTemplate.from_template(human_prompt),
+        ]
+    )

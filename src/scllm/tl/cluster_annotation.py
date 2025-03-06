@@ -2,7 +2,27 @@ import pandas as pd
 import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
 
-from .chains import CellTypeAnnotationChain
+from .chains import construct_term_chain
+from .utils import _prepare_mapping
+
+
+def _prepare_chain_data(
+    adata: sc.AnnData, cluster_key: str, top_genes: int = 10, num_samples: int = 1
+):
+    cluster_data = []
+    for group in adata.obs[cluster_key].unique():
+        genes = (
+            sc.get.rank_genes_groups_df(
+                adata,
+                group=group,
+                key=f"{cluster_key}_rank_genes_groups",
+            )
+            .head(top_genes)
+            .names.tolist()
+        )
+        for i in range(num_samples):
+            cluster_data.append({"cluster": group, "genes": genes, "init": i})
+    return cluster_data
 
 
 def annotate_cluster(
@@ -12,6 +32,8 @@ def annotate_cluster(
     num_samples: int = 1,
     key_added: str = "scllm_annotation",
     top_genes: int = 10,
+    term: str = "cell type",
+    extra: str = "",
     **kwargs,
 ) -> sc.AnnData:
     """Annotate cell clusters using marker genes and LLM-based analysis.
@@ -60,33 +82,17 @@ def annotate_cluster(
     )
 
     # create the input data for the input chain [{'cluster': cluster_id, 'genes': [list of top_genes]}]
-    cluster_data = []
-    for group in adata.obs[cluster_key].unique():
-        genes = (
-            sc.get.rank_genes_groups_df(
-                adata,
-                group=group,
-                key=f"{cluster_key}_rank_genes_groups",
-            )
-            .head(top_genes)
-            .names.tolist()
-        )
+    cluster_data = _prepare_chain_data(adata, cluster_key, top_genes, num_samples)
 
-        cluster_data.append({"cluster": group, "genes": genes})
-
-    out = [
-        pd.DataFrame(CellTypeAnnotationChain(llm).invoke(cluster_data)).assign(init=1)
-        for i in range(num_samples)
-    ]
-    df = pd.concat(out)
+    # run the chain
+    chain = construct_term_chain(
+        llm, term=term, extra=extra, passthrough=["cluster", "init"]
+    )
+    out = chain.invoke(cluster_data)
+    df = pd.DataFrame(out)
 
     # map cluster id's to celltype
-    mapping = (
-        pd.crosstab(df["cluster"], df["cell_type"])
-        .agg(["idxmax", "max"], axis=1)
-        .loc[:, "idxmax"]
-        .to_dict()
-    )
+    mapping = _prepare_mapping(df, "cluster", "target")
 
     adata.obs[key_added] = adata.obs[cluster_key].astype(str).map(mapping)
-    adata.uns[f"scllm_{cluster_key}"] = df
+    adata.uns[key_added] = out

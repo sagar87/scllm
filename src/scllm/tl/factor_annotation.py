@@ -4,7 +4,8 @@ import pandas as pd
 import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
 
-from .chains import FactorAnnotationChain
+from .chains import construct_term_chain
+from .utils import _prepare_mapping
 
 
 def _create_factor_df(
@@ -54,6 +55,33 @@ def _create_factor_df(
     return factor_df
 
 
+def _prepare_chain_data(
+    adata: sc.AnnData,
+    varm_key: str,
+    factors: list[str] | str = "0",
+    sign: Literal["+", "-"] = "+",
+    top_genes: int = 10,
+    num_samples: int = 1,
+) -> pd.DataFrame:
+    # extract top factor weights
+    factor_weights = _create_factor_df(adata, varm_key, factors, sign, top_genes)
+
+    data = []
+    for factor in factors:
+        sub = factor_weights.loc[factor_weights["factor"] == factor]
+        for i in range(num_samples):
+            data.append(
+                {
+                    "factor": factor,
+                    "genes": sub["gene"].tolist(),
+                    "sign": sign,
+                    "init": i,
+                }
+            )
+
+    return data
+
+
 def annotate_factor(
     adata: sc.AnnData,
     varm_key: str,
@@ -62,6 +90,9 @@ def annotate_factor(
     num_samples: int = 1,
     key_added: str = "scllm",
     top_genes: int = 10,
+    sign: Literal["+", "both"] = "both",
+    term: str = "cell type",
+    extra: str = "",
     **kwargs,
 ) -> sc.AnnData:
     """Annotate factors using marker genes and LLM-based analysis.
@@ -107,19 +138,24 @@ def annotate_factor(
     if isinstance(factors, str):
         factors = [factors]
 
-    factor_pos = _create_factor_df(adata, varm_key, factors, "+", top_genes)
-    factor_neg = _create_factor_df(adata, varm_key, factors, "-", top_genes)
-
-    data = []
-    for factor in factors:
-        factor_pos_sub = factor_pos.loc[factor_pos["factor"] == factor]
-        factor_neg_sub = factor_neg.loc[factor_neg["factor"] == factor]
-        data.append(
-            {"factor": factor, "genes": factor_pos_sub["gene"].tolist(), "sign": "+"}
+    # prepare data for the chain
+    data = _prepare_chain_data(adata, varm_key, factors, "+", top_genes, num_samples)
+    if sign == "both":
+        data_neg = _prepare_chain_data(
+            adata, varm_key, factors, "-", top_genes, num_samples
         )
-        data.append(
-            {"factor": factor, "genes": factor_neg_sub["gene"].tolist(), "sign": "-"}
-        )
+        data += data_neg
 
-    res = FactorAnnotationChain(llm).invoke(data)
-    adata.uns[key_added] = res
+    chain = construct_term_chain(
+        llm, term=term, extra=extra, passthrough=["factor", "sign", "init"]
+    )
+
+    out = chain.invoke(data)
+
+    # generate the mostlikely mapping
+    df = pd.DataFrame(out).assign(
+        id=lambda df: df.apply(lambda row: row.factor + row.sign, 1)
+    )
+    mapping = _prepare_mapping(df, "id", "target")
+
+    adata.uns[key_added] = {"raw": out, "mapping": mapping}
