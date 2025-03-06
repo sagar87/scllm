@@ -1,0 +1,36 @@
+name: Docs
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - name: Run image
+        uses: astral-sh/setup-uv@v5
+      - name: install
+        run: uv sync --all-extras --dev
+      - name: Install Pandoc
+        run: sudo apt-get install -y pandoc
+      - name: Build docs
+        run: |
+          mkdir gh-pages
+          touch gh-pages/.nojekyll
+          cd docs/
+          uv run sphinx-build -b html . _build
+          cp -r _build/* ../gh-pages/
+      - name: Deploy documentation
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
+          folder: gh-pages
