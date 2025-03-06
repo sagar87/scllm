@@ -2,7 +2,7 @@ import pandas as pd
 import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
 
-from .chains import CellTypeAnnotationChain, construct_term_chain
+from .chains import construct_term_chain
 
 
 def _prepare_mapping(df: pd.DataFrame, identity: str, target: str):
@@ -15,7 +15,7 @@ def _prepare_mapping(df: pd.DataFrame, identity: str, target: str):
     return mapping
 
 
-def _prepare_cluster_data(
+def _prepare_chain_data(
     adata: sc.AnnData, cluster_key: str, top_genes: int = 10, num_samples: int = 1
 ):
     cluster_data = []
@@ -42,7 +42,7 @@ def annotate_cluster(
     key_added: str = "scllm_annotation",
     top_genes: int = 10,
     term: str = "cell type",
-    extra: str = "", 
+    extra: str = "",
     **kwargs,
 ) -> sc.AnnData:
     """Annotate cell clusters using marker genes and LLM-based analysis.
@@ -91,10 +91,12 @@ def annotate_cluster(
     )
 
     # create the input data for the input chain [{'cluster': cluster_id, 'genes': [list of top_genes]}]
-    cluster_data = _prepare_cluster_data(adata, cluster_key, top_genes, num_samples)
+    cluster_data = _prepare_chain_data(adata, cluster_key, top_genes, num_samples)
 
     # run the chain
-    chain = construct_term_chain(llm, term=term, extra=extra, passthrough=["cluster", "init"])
+    chain = construct_term_chain(
+        llm, term=term, extra=extra, passthrough=["cluster", "init"]
+    )
     out = chain.invoke(cluster_data)
     df = pd.DataFrame(out)
 
