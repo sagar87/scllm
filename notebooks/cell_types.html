@@ -393,12 +393,19 @@ document.write(`
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enter your API key for ChatGPT</span>
+<span class="c1"># import os</span>
+<span class="c1"># os.environ[&quot;OPENAI_API_KEY&quot;] = &quot;Enter your API key here.&quot;</span>
+<span class="c1"># Or alternatively save your OPENAI key in a .env file and load it via dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
 <span class="n">load_dotenv</span><span class="p">()</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scllm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -475,120 +482,12 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;scllm_leiden&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>cluster</th>
-      <th>init</th>
-      <th>target</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>0</td>
-      <td>T cell</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>1</td>
-      <td>T cell</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>2</td>
-      <td>T cell</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>3</td>
-      <td>T cell</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>4</td>
-      <td>T cell</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>75</th>
-      <td>5</td>
-      <td>5</td>
-      <td>Platelet</td>
-    </tr>
-    <tr>
-      <th>76</th>
-      <td>6</td>
-      <td>6</td>
-      <td>Platelet</td>
-    </tr>
-    <tr>
-      <th>77</th>
-      <td>7</td>
-      <td>7</td>
-      <td>Platelet</td>
-    </tr>
-    <tr>
-      <th>78</th>
-      <td>8</td>
-      <td>8</td>
-      <td>Platelet</td>
-    </tr>
-    <tr>
-      <th>79</th>
-      <td>9</td>
-      <td>9</td>
-      <td>Platelet</td>
-    </tr>
-  </tbody>
-</table>
-<p>80 rows × 3 columns</p>
-</div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;scllm_annotation&#39;</span><span class="p">,</span> <span class="s1">&#39;louvain&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -599,7 +498,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_cell_types_12_0.png" src="../_images/notebooks_cell_types_12_0.png" />
+<img alt="../_images/notebooks_cell_types_11_0.png" src="../_images/notebooks_cell_types_11_0.png" />
 </div>
 </div>
 </section>
@@ -607,7 +506,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <h2>Angelidis<a class="headerlink" href="#Angelidis" title="Permalink to this heading">#</a></h2>
 <p>In this example we will use the <code class="docutils literal notranslate"><span class="pre">annotate_cluster</span></code> function to annotate the cells in the Angelidis dataset.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;/Users/harald/Downloads/umap_1.h5ad&#39;</span><span class="p">)</span>
@@ -615,7 +514,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;cell_type&#39;</span><span class="p">)</span>
@@ -626,11 +525,11 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_cell_types_16_0.png" src="../_images/notebooks_cell_types_16_0.png" />
+<img alt="../_images/notebooks_cell_types_15_0.png" src="../_images/notebooks_cell_types_15_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">leiden</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;igraph&quot;</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">neighbors_key</span><span class="o">=</span><span class="s1">&#39;X_scPCA&#39;</span><span class="p">)</span>
@@ -638,7 +537,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="s1">&#39;cell_type&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -649,64 +548,36 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_cell_types_18_0.png" src="../_images/notebooks_cell_types_18_0.png" />
+<img alt="../_images/notebooks_cell_types_17_0.png" src="../_images/notebooks_cell_types_17_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">&#39;log1p&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">angelidis</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">&#39;counts&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;log1p&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;wilcoxon&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span>
+    <span class="n">angelidis</span><span class="p">,</span>
+    <span class="s1">&#39;leiden&#39;</span><span class="p">,</span>
+    <span class="n">llm</span><span class="p">,</span>
+    <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;Keep in mind that cells stem from lung tissue.&quot;</span><span class="p">,</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;log1p&#39;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;wilcoxon&#39;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:435: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;names&#34;] = self.var_names[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:437: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;scores&#34;] = scores[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:440: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;pvals&#34;] = pvals[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:450: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;pvals_adj&#34;] = pvals_adj[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:461: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;logfoldchanges&#34;] = np.log2(
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:435: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;names&#34;] = self.var_names[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:437: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;scores&#34;] = scores[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:440: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;pvals&#34;] = pvals[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:450: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;pvals_adj&#34;] = pvals_adj[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:461: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;logfoldchanges&#34;] = np.log2(
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:435: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;names&#34;] = self.var_names[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:437: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;scores&#34;] = scores[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:440: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;pvals&#34;] = pvals[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:450: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;pvals_adj&#34;] = pvals_adj[global_indices]
-/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/tools/_rank_genes_groups.py:461: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
-  self.stats[group_name, &#34;logfoldchanges&#34;] = np.log2(
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cell_type&#39;</span><span class="p">,</span> <span class="s1">&#39;scllm_annotation&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -717,7 +588,39 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_cell_types_21_0.png" src="../_images/notebooks_cell_types_21_0.png" />
+<img alt="../_images/notebooks_cell_types_20_0.png" src="../_images/notebooks_cell_types_20_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span>
+    <span class="n">angelidis</span><span class="p">,</span>
+    <span class="s1">&#39;leiden&#39;</span><span class="p">,</span>
+    <span class="n">llm</span><span class="p">,</span>
+    <span class="n">top_genes</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;alternative_annotation&#39;</span><span class="p">,</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;log1p&#39;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;wilcoxon&#39;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cell_type&#39;</span><span class="p">,</span> <span class="s1">&#39;alternative_annotation&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_cell_types_22_0.png" src="../_images/notebooks_cell_types_22_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
