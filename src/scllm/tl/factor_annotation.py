@@ -144,8 +144,9 @@ def annotate_factor(
     >>> adata = annotate_factor(adata, varm_key="pca", llm=llm, factors=["0", "1"])
     """
     # validate inputs
-    num_genes = adata.varm[varm_key].shape[1]
-    factors = _validate_factors(factors, num_genes)
+    num_factors = adata.varm[varm_key].shape[1]
+    num_genes = adata.shape[1]
+    factors = _validate_factors(factors, num_factors)
     _ = _validate_sign(sign)
     _ = _validate_top_genes(top_genes, num_genes)
 
@@ -156,7 +157,8 @@ def annotate_factor(
             adata, varm_key, factors, "-", top_genes, num_samples
         )
         data += data_neg
-
+        
+    # run the chain
     chain = construct_term_chain(
         llm, term=term, extra=extra, passthrough=["factor", "sign", "init"]
     )
