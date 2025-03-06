@@ -1,7 +1,6 @@
 from typing import List, Union
 
 import matplotlib.pyplot as plt
-import pandas as pd
 from anndata import AnnData
 from matplotlib.axes import Axes
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -126,18 +125,17 @@ def _factor_embedding(
     cax = divider.append_axes(colorbar_pos, size=colorbar_width, pad=pad)
     fig.colorbar(im, cax=cax, orientation=orientation)
     if annotation in adata.uns:
-        df = pd.DataFrame(adata.uns[annotation])
-        minus_axis = (
-            df.loc[(df["factor"] == factor) & (df["sign"] == "-")]
-            .loc[:, "cell_type"]
-            .item()
-        )
-        plus_axis = (
-            df.loc[(df["factor"] == factor) & (df["sign"] == "+")]
-            .loc[:, "cell_type"]
-            .item()
-        )
-        ax.set_title(f"{minus_axis} (-) vs {plus_axis} (+)")
+        annot_dict = adata.uns[annotation]["mapping"]
+        title = ""
+
+        if f"{factor}-" in annot_dict:
+            neg_axis = annot_dict[f"{factor}-"]
+            title += f"{neg_axis} (-) vs "
+
+        pos_axis = annot_dict[f"{factor}+"]
+        title += f"{pos_axis} (+)"
+        ax.set_title(title)
+
     else:
         ax.set_title(f"Factor {factor}")
 
