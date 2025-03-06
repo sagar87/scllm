@@ -86,7 +86,7 @@ def annotate_factor(
     adata: sc.AnnData,
     varm_key: str,
     llm: BaseLanguageModel,
-    factors: list[str] | str = "0",
+    factors: list[str] | str = "all",
     num_samples: int = 1,
     key_added: str = "scllm",
     top_genes: int = 10,
@@ -135,8 +135,13 @@ def annotate_factor(
     >>> adata = sc.read_h5ad("data.h5ad")
     >>> adata = annotate_factor(adata, varm_key="pca", llm=llm, factors=["0", "1"])
     """
+    # handle factors, if all, use all factors
+    # TODO: need to throw error if factors is not a list or str
     if isinstance(factors, str):
-        factors = [factors]
+        if factors == "all":
+            factors = [str(i) for i in range(adata.varm[varm_key].shape[1])]
+        else:
+            factors = [factors]
 
     # prepare data for the chain
     data = _prepare_chain_data(adata, varm_key, factors, "+", top_genes, num_samples)
