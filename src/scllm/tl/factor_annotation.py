@@ -5,7 +5,28 @@ import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
 
 from .chains import construct_term_chain
-from .utils import _prepare_mapping
+from .utils import _prepare_mapping, _validate_top_genes
+
+
+def _validate_factors(factors: list[str] | str, num_factors: int):
+    """Validate factors have the right format."""
+    if isinstance(factors, list):
+        if len(factors) == 0:
+            raise ValueError("Factors must be a non-empty list")
+
+    if isinstance(factors, str):
+        if factors == "all":
+            factors = [str(i) for i in range(num_factors)]
+        else:
+            factors = [factors]
+
+    return factors
+
+
+def _validate_sign(sign: Literal["+", "-", "both"]):
+    if sign not in ["+", "-", "both"]:
+        raise ValueError("Sign must be one of: +, -, both")
+    return sign
 
 
 def _create_factor_df(
@@ -15,28 +36,10 @@ def _create_factor_df(
     sign: Literal["+", "-"] = "+",
     top_genes: int = 10,
 ) -> pd.DataFrame:
-    """Create a DataFrame containing factor loadings for specified factors.
+    """Create a DataFrame containing the topfactor loadings for specified factors."""
+    # validate factors have the right format
+    factors = _validate_factors(factors, adata.varm[varm_key].shape[1])
 
-    This helper function processes the factor loadings from an AnnData object and
-    returns a DataFrame with the top genes for each specified factor.
-
-    Parameters
-    ----------
-    adata : sc.AnnData
-        AnnData object containing factor loadings in varm
-    varm_key : str
-        Key in adata.varm containing the factor loadings
-    factors : list[str] | str, default="0"
-        Factor(s) to analyze. Can be a single factor or list of factors
-    sign : Literal["+", "-"], default="+"
-        Whether to consider positive or negative loadings
-
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame containing gene names, factor IDs, and loadings for the top genes
-        of each specified factor
-    """
     # create factor dataframe
     factor_df = (
         pd.DataFrame(
@@ -58,11 +61,15 @@ def _create_factor_df(
 def _prepare_chain_data(
     adata: sc.AnnData,
     varm_key: str,
-    factors: list[str] = ["0"],
+    factors: list[str] | str = ["0"],
     sign: Literal["+", "-"] = "+",
     top_genes: int = 10,
     num_samples: int = 1,
-) -> pd.DataFrame:
+) -> list[dict]:
+    """Prepare data for the chain."""
+    # validate factors have the right format
+    factors = _validate_factors(factors, adata.varm[varm_key].shape[1])
+
     # extract top factor weights
     factor_weights = _create_factor_df(adata, varm_key, factors, sign, top_genes)
 
@@ -88,7 +95,7 @@ def annotate_factor(
     llm: BaseLanguageModel,
     factors: list[str] | str = "all",
     num_samples: int = 1,
-    key_added: str = "scllm",
+    key_added: str = "factor_annotation",
     top_genes: int = 10,
     sign: Literal["+", "both"] = "both",
     term: str = "cell type",
@@ -109,13 +116,14 @@ def annotate_factor(
         Key in adata.varm containing the factor loadings
     llm : BaseLanguageModel
         Language model instance for factor annotation
-    factors : list[str] | str, default="0"
+    factors : list[str] | str, default="all"
         Factor(s) to analyze. Can be a single factor or list of factors
-    sign : Literal["+", "-"], default="+"
-        Whether to consider positive or negative loadings
+    sign : Literal["+", "both"], default="+"
+        Whether to consider positive or negative loadings. Use "+" for the
+        analysis of NMF loadings.
     num_samples : int, default=1
         Number of times to run the annotation to assess stability
-    key_added : str, default="scllm_annotation"
+    key_added : str, default="factor_annotation"
         Key under which to store the annotations in adata.obs
     top_genes : int, default=10
         Number of top genes to consider for each factor
@@ -135,13 +143,11 @@ def annotate_factor(
     >>> adata = sc.read_h5ad("data.h5ad")
     >>> adata = annotate_factor(adata, varm_key="pca", llm=llm, factors=["0", "1"])
     """
-    # handle factors, if all, use all factors
-    # TODO: need to throw error if factors is not a list or str
-    if isinstance(factors, str):
-        if factors == "all":
-            factors = [str(i) for i in range(adata.varm[varm_key].shape[1])]
-        else:
-            factors = [factors]
+    # validate inputs
+    num_genes = adata.varm[varm_key].shape[1]
+    factors = _validate_factors(factors, num_genes)
+    _ = _validate_sign(sign)
+    _ = _validate_top_genes(top_genes, num_genes)
 
     # prepare data for the chain
     data = _prepare_chain_data(adata, varm_key, factors, "+", top_genes, num_samples)

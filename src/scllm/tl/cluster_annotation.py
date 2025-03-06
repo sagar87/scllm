@@ -3,7 +3,13 @@ import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
 
 from .chains import construct_term_chain
-from .utils import _prepare_mapping
+from .utils import _prepare_mapping, _validate_top_genes
+
+
+def _validate_cluster_key(adata: sc.AnnData, cluster_key: str):
+    if cluster_key not in adata.obs.columns:
+        raise KeyError(f"Cluster key {cluster_key} not found in adata.obs")
+    return cluster_key
 
 
 def _prepare_chain_data(
@@ -30,7 +36,7 @@ def annotate_cluster(
     cluster_key: str,
     llm: BaseLanguageModel,
     num_samples: int = 1,
-    key_added: str = "scllm_annotation",
+    key_added: str = "cluster_annotation",
     top_genes: int = 10,
     term: str = "cell type",
     extra: str = "",
@@ -52,7 +58,7 @@ def annotate_cluster(
         Language model instance for cell type annotation
     num_samples : int, default=1
         Number of times to run the annotation to assess stability
-    key_added : str, default="scllm_annotation"
+    key_added : str, default="cluster_annotation"
         Key under which to store the annotations in adata.obs
     top_genes : int, default=10
         Number of top marker genes to consider for each cluster
@@ -73,6 +79,10 @@ def annotate_cluster(
     >>> adata = sc.read_h5ad("data.h5ad")
     >>> adata = annotate_cluster(adata, cluster_key="leiden", llm=llm)
     """
+    num_genes = adata.shape[1]
+    _ = _validate_top_genes(top_genes, num_genes)
+    _ = _validate_cluster_key(adata, cluster_key)
+
     # rank genes
     sc.tl.rank_genes_groups(
         adata,
@@ -95,4 +105,4 @@ def annotate_cluster(
     mapping = _prepare_mapping(df, "cluster", "target")
 
     adata.obs[key_added] = adata.obs[cluster_key].astype(str).map(mapping)
-    adata.uns[key_added] = out
+    adata.uns[key_added] = {"raw": out, "mapping": mapping}
