@@ -26,9 +26,8 @@ def construct_term_prompt(
     )
 
 
-
 def construct_term_comparison_prompt(
-    term: str = "cell type", 
+    term: str = "cell type",
     extra: str = "",
     system_prompt: str = "You are an expert biologist with extensive knowledge in single cell RNA-seq analysis.",
     human_prompt: str = "Are the two {term} descriptions: {{entity1}} and {{entity2}} the same? \n{extra}",

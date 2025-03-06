@@ -39,14 +39,15 @@ def construct_term_chain(llm, term: str, extra: str = "", passthrough: list[str]
     )
 
 
-
-def construct_term_comparison_chain(llm, term: str, extra: str = "", passthrough: list[str] = []):
+def construct_term_comparison_chain(
+    llm, term: str, extra: str = "", passthrough: list[str] = []
+):
     """
     Constructs a chain for comparing two term descriptions using a language model.
 
-    This function sets up a chain where a language model evaluates whether two 
-    given descriptions of a term are the same. It uses a prompt template and an 
-    output parser to format the input and interpret the output, respectively. 
+    This function sets up a chain where a language model evaluates whether two
+    given descriptions of a term are the same. It uses a prompt template and an
+    output parser to format the input and interpret the output, respectively.
     Additional data can be passed through the chain without modification.
 
     Parameters
@@ -78,7 +79,9 @@ def construct_term_comparison_chain(llm, term: str, extra: str = "", passthrough
                 **passes,
                 "target": RunnableLambda(
                     lambda x: prompt.format_prompt(
-                        entity1=x["entity1"], entity2=x["entity2"],format_instructions=format_instructions
+                        entity1=x["entity1"],
+                        entity2=x["entity2"],
+                        format_instructions=format_instructions,
                     )
                 )
                 | llm

@@ -11,7 +11,6 @@ def construct_term_parser(term: str):
     return PydanticOutputParser(pydantic_object=Term)
 
 
-
 def construct_term_comparison_parser(term: str):
     description = f"Are the two {term}s the same."
 
@@ -19,5 +18,3 @@ def construct_term_comparison_parser(term: str):
         same: bool = Field(description=description)
 
     return PydanticOutputParser(pydantic_object=Same)
-
-

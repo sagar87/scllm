@@ -25,21 +25,33 @@ def _prepare_chain_data(
             cluster_data.append({"cluster": group, "genes": genes, "init": i})
     return cluster_data
 
+
 def _prepare_pairwise_term_comparison(
-        term_mapping: dict[str, str], num_samples: int = 1
+    term_mapping: dict[str, str], num_samples: int = 1
 ):
     data = []
     for pair in combinations(term_mapping, 2):
         for i in range(num_samples):
-            data.append({"index1": pair[0], "index2": pair[1],"entity1": term_mapping[pair[0]], "entity2": term_mapping[pair[1]], "init": i})
+            data.append(
+                {
+                    "index1": pair[0],
+                    "index2": pair[1],
+                    "entity1": term_mapping[pair[0]],
+                    "entity2": term_mapping[pair[1]],
+                    "init": i,
+                }
+            )
 
     return data
 
+
 def _collapse_repeated_terms(comparison_df: pd.DataFrame, mapping: dict[str, str]):
-    result_df = comparison_df.groupby(['index1','index2']).mean()['target'].reset_index()
+    result_df = (
+        comparison_df.groupby(["index1", "index2"]).mean()["target"].reset_index()
+    )
     for index, row in result_df.iterrows():
-        if row['target'] > 0.5:
-            mapping[row['index2']] = mapping[row['index1']]
+        if row["target"] > 0.5:
+            mapping[row["index2"]] = mapping[row["index1"]]
     return mapping
 
 
@@ -115,7 +127,9 @@ def annotate_cluster(
     term_pairs = _prepare_pairwise_term_comparison(mapping, num_samples)
 
     # compare the outputs of the LLM for identity using the LLM
-    chain2 = construct_term_comparison_chain(llm, term=term, extra=extra, passthrough=['index1', 'index2', 'init'])
+    chain2 = construct_term_comparison_chain(
+        llm, term=term, extra=extra, passthrough=["index1", "index2", "init"]
+    )
 
     pair_out = chain2.invoke(term_pairs)
     df_pairs = pd.DataFrame(pair_out)
