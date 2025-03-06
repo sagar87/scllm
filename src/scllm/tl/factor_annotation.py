@@ -58,7 +58,7 @@ def _create_factor_df(
 def _prepare_chain_data(
     adata: sc.AnnData,
     varm_key: str,
-    factors: list[str] | str = "0",
+    factors: list[str] = ["0"],
     sign: Literal["+", "-"] = "+",
     top_genes: int = 10,
     num_samples: int = 1,
