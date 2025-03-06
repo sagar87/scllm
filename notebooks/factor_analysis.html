@@ -393,7 +393,7 @@ document.write(`
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enter your API key for ChatGPT</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="c1"># Enter your API key for ChatGPT</span>
 <span class="c1"># import os</span>
 <span class="c1"># os.environ[&quot;OPENAI_API_KEY&quot;] = &quot;Enter your API key here.&quot;</span>
 <span class="c1"># Or alternatively save your OPENAI key in a .env file and load it via dotenv</span>
@@ -407,8 +407,29 @@ document.write(`
 </pre></div>
 </div>
 </div>
+<section id="Factor-analysis">
+<h1>Factor analysis<a class="headerlink" href="#Factor-analysis" title="Permalink to this heading">#</a></h1>
+<section id="PBMC-dataset">
+<h2>PBMC dataset<a class="headerlink" href="#PBMC-dataset" title="Permalink to this heading">#</a></h2>
+<p>In this tutorial we leverage <code class="docutils literal notranslate"><span class="pre">scllm</span></code> to annotate the PCA factors with cell type annotations.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">pbmc3k_processed</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">n_comps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o-mini&quot;</span>
@@ -416,156 +437,14 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<section id="Factor-analysis">
-<h1>Factor analysis<a class="headerlink" href="#Factor-analysis" title="Permalink to this heading">#</a></h1>
-<p>In this tutorial, we’ll walk through how to load preprocessed Peripheral Blood Mononuclear Cells (PBMC) data and apply Principal Component Analysis (PCA) using scanpy. PCA is a dimensionality reduction technique that helps capture the most important variation in high-dimensional data, making it easier to visualize and analyze.</p>
-<section id="PBMC-dataset">
-<h2>PBMC dataset<a class="headerlink" href="#PBMC-dataset" title="Permalink to this heading">#</a></h2>
-<p>This following code loads a preprocessed dataset of 3,000 PBMCs (Peripheral Blood Mononuclear Cells), a widely used scRNA-seq dataset. Then we apply PCA on the dataset, reducing the dimensionality to 20 principal components (PCs).</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">pbmc3k_processed</span><span class="p">()</span>
-<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">n_comps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Now, apply LLM-based annotation to identify biological themes in the principal components:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">PCs</span></code>: Specifies Principal Components as the factors to annotate.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">llm</span></code>: A language model (LLM) used to assign biological meaning to gene sets.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">top_genes=40</span></code>: Uses the top 40 genes contributing most to each PC for annotation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">key_added</span> <span class="pre">='pca_annotation'</span></code>: Stores the generated annotations in pbmc.uns[‘pca_annotation’].</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">num_samples=2</span></code>: Specifies the number of interpretations to generate per factor.</p></li>
-</ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span>
-    <span class="n">pbmc</span><span class="p">,</span>
-    <span class="s1">&#39;PCs&#39;</span><span class="p">,</span>
-    <span class="n">llm</span><span class="p">,</span>
-    <span class="n">top_genes</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
-    <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;pca_annotation&#39;</span><span class="p">,</span>
-    <span class="n">num_samples</span><span class="o">=</span><span class="mi">5</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>After running the function, you can check the stored annotations:</p>
-<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;pca_annotation&#39;</span><span class="p">][</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;PCs&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">factors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">],</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;pca_annotation&#39;</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;0+&#39;: &#39;Monocyte/Macrophage&#39;,
- &#39;0-&#39;: &#39;CD8+ T cell&#39;,
- &#39;1+&#39;: &#39;Cytotoxic T cell&#39;,
- &#39;1-&#39;: &#39;B cell&#39;,
- &#39;10+&#39;: &#39;Natural Killer (NK) Cell&#39;,
- &#39;10-&#39;: &#39;Natural Killer (NK) cell&#39;,
- &#39;11+&#39;: &#39;Macrophage&#39;,
- &#39;11-&#39;: &#39;Dendritic Cell&#39;,
- &#39;12+&#39;: &#39;Plasma Cell&#39;,
- &#39;12-&#39;: &#39;Photoreceptor cell&#39;,
- &#39;13+&#39;: &#39;B cell&#39;,
- &#39;13-&#39;: &#39;T follicular helper cell&#39;,
- &#39;14+&#39;: &#39;B cell&#39;,
- &#39;14-&#39;: &#39;Natural Killer (NK) cell&#39;,
- &#39;15+&#39;: &#39;Natural Killer (NK) Cell&#39;,
- &#39;15-&#39;: &#39;Cardiomyocyte&#39;,
- &#39;16+&#39;: &#39;B cell&#39;,
- &#39;16-&#39;: &#39;B cell&#39;,
- &#39;17+&#39;: &#39;B cell&#39;,
- &#39;17-&#39;: &#39;T cell&#39;,
- &#39;18+&#39;: &#39;B cell&#39;,
- &#39;18-&#39;: &#39;B cell&#39;,
- &#39;19+&#39;: &#39;Immune Cell (likely a subtype such as T cell or B cell)&#39;,
- &#39;19-&#39;: &#39;Natural Killer (NK) Cell&#39;,
- &#39;2+&#39;: &#39;Platelet&#39;,
- &#39;2-&#39;: &#39;B cell&#39;,
- &#39;3+&#39;: &#39;B cell&#39;,
- &#39;3-&#39;: &#39;T cell&#39;,
- &#39;4+&#39;: &#39;Monocyte/Macrophage&#39;,
- &#39;4-&#39;: &#39;Dendritic Cell&#39;,
- &#39;5+&#39;: &#39;CD8+ T cell&#39;,
- &#39;5-&#39;: &#39;Natural Killer (NK) Cell&#39;,
- &#39;6+&#39;: &#39;Natural Killer (NK) cell&#39;,
- &#39;6-&#39;: &#39;T helper 1 (Th1) cell&#39;,
- &#39;7+&#39;: &#39;Dendritic Cell&#39;,
- &#39;7-&#39;: &#39;Natural Killer (NK) cell&#39;,
- &#39;8+&#39;: &#39;Dendritic Cell&#39;,
- &#39;8-&#39;: &#39;Activated T cell&#39;,
- &#39;9+&#39;: &#39;Type I Interferon-activated cells (likely activated macrophages or dendritic cells)&#39;,
- &#39;9-&#39;: &#39;Macrophage&#39;}
-</pre></div></div>
-</div>
-<p>We can obtain a quick overview about the potential meaning of each PC using a stripplot:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">X_pca</span></code>: Uses PCA embeddings for visualization.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pca_annotation</span></code>: Maps the biological annotations (e.g., cell-type-specific processes) to the PCA factors.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ax=ax</span></code>: Plots on the predefined matplotlib axis.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">size=0.4</span></code>: Adjusts the point size for better readability.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">jitter=0.2</span></code>: Adds small random noise to prevent points from overlapping.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ax.set_xlim([-20,</span> <span class="pre">30])</span></code>: Restricts the x-axis range for better visualization.</p></li>
-</ul>
-<p>Each dot represents a principal component (PC).</p>
-<ul class="simple">
-<li><p>The y-axis (inferred from pca_annotation) shows each factor and the biological themes assigned to their corresponding PCs.</p></li>
-<li><p>The x-axis represents the PCA factors for each cell in the dataset.</p></li>
-</ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-<span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_stripplot</span><span class="p">(</span>
-    <span class="n">pbmc</span><span class="p">,</span>
-    <span class="s1">&#39;X_pca&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;pca_annotation&#39;</span><span class="p">,</span>
-    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
-    <span class="n">size</span><span class="o">=</span><span class="mf">.4</span><span class="p">,</span>
-    <span class="n">jitter</span><span class="o">=</span><span class="mf">.2</span>
-<span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(-20.0, 30.0)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_factor_analysis_11_1.png" src="../_images/notebooks_factor_analysis_11_1.png" />
-</div>
-</div>
-<p>Next we visualize PCA factor contributions on a UMAP embedding using <code class="docutils literal notranslate"><span class="pre">sl.pl.factor_embedding</span></code>. This helps us understand how different principal components (PCs) relate to the low-dimensional structure of our single-cell RNA-seq data.</p>
-<p>Why Is This Useful?</p>
-<ul class="simple">
-<li><p>PCA reduces dimensionality, identifying major sources of variation.</p></li>
-<li><p>UMAP preserves local and global structures, revealing meaningful biological clusters.</p></li>
-<li><p>Overlaying PCA factors on UMAP allows us to see which PCs influence different cell populations.</p></li>
-</ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -586,64 +465,59 @@ document.write(`
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_factor_analysis_13_0.png" src="../_images/notebooks_factor_analysis_13_0.png" />
+<img alt="../_images/notebooks_factor_analysis_8_0.png" src="../_images/notebooks_factor_analysis_8_0.png" />
 </div>
 </div>
-<p>Of course we can also query biological processes instead of cell types.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span>
-    <span class="n">pbmc</span><span class="p">,</span>
-    <span class="s1">&#39;PCs&#39;</span><span class="p">,</span>
-    <span class="n">llm</span><span class="p">,</span>
-    <span class="n">top_genes</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-    <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;biological_process&#39;</span><span class="p">,</span>
-    <span class="n">term</span><span class="o">=</span><span class="s1">&#39;biological process&#39;</span><span class="p">,</span>
-    <span class="n">num_samples</span><span class="o">=</span><span class="mi">10</span>
-<span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;PCs&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">factors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">],</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                      <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;biological_process&#39;</span><span class="p">,</span> <span class="n">term</span><span class="o">=</span><span class="s1">&#39;biological process&#39;</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_embedding</span><span class="p">(</span>
+    <span class="n">pbmc</span><span class="p">,</span>
+    <span class="s1">&#39;pca&#39;</span><span class="p">,</span>
+    <span class="n">factors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">],</span>
+    <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_umap&#39;</span><span class="p">,</span>
+    <span class="n">annotation</span><span class="o">=</span><span class="s1">&#39;biological_process&#39;</span><span class="p">,</span>
+    <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_factor_analysis_10_0.png" src="../_images/notebooks_factor_analysis_10_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-<span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_stripplot</span><span class="p">(</span>
-    <span class="n">pbmc</span><span class="p">,</span>
-    <span class="s1">&#39;X_pca&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;biological_process&#39;</span><span class="p">,</span>
-    <span class="n">factors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">],</span>
-    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
-    <span class="n">size</span><span class="o">=</span><span class="mf">.4</span><span class="p">,</span>
-    <span class="n">jitter</span><span class="o">=</span><span class="mf">.2</span>
-<span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;X_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;louvain&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(-20.0, 30.0)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_factor_analysis_16_1.png" src="../_images/notebooks_factor_analysis_16_1.png" />
+<img alt="../_images/notebooks_factor_analysis_11_0.png" src="../_images/notebooks_factor_analysis_11_0.png" />
 </div>
 </div>
 <p>For NMF like factor models we can also just use the positive loading weights for the analysis.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;PCs&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">factors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">],</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;nmf_annotation&#39;</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -651,7 +525,7 @@ document.write(`
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_embedding</span><span class="p">(</span>
@@ -670,7 +544,7 @@ document.write(`
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_factor_analysis_19_0.png" src="../_images/notebooks_factor_analysis_19_0.png" />
+<img alt="../_images/notebooks_factor_analysis_14_0.png" src="../_images/notebooks_factor_analysis_14_0.png" />
 </div>
 </div>
 </section>
@@ -678,7 +552,7 @@ document.write(`
 <h2>Angelidis<a class="headerlink" href="#Angelidis" title="Permalink to this heading">#</a></h2>
 <p>In this example we will use the <code class="docutils literal notranslate"><span class="pre">annotate_cluster</span></code> function to annotate the cells in the Angelidis dataset.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;/Users/harald/Downloads/umap_1.h5ad&#39;</span><span class="p">)</span>
@@ -686,7 +560,7 @@ document.write(`
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;cell_type&#39;</span><span class="p">)</span>
@@ -697,11 +571,11 @@ document.write(`
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_factor_analysis_23_0.png" src="../_images/notebooks_factor_analysis_23_0.png" />
+<img alt="../_images/notebooks_factor_analysis_18_0.png" src="../_images/notebooks_factor_analysis_18_0.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span>
@@ -709,7 +583,7 @@ document.write(`
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -725,7 +599,7 @@ AnnData object with n_obs × n_vars = 14064 × 4000
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span><span class="o">.</span><span class="n">varm</span><span class="p">[</span><span class="s1">&#39;W_scpca_ref&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">angelidis</span><span class="o">.</span><span class="n">varm</span><span class="p">[</span><span class="s1">&#39;W_scPCA&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
@@ -733,7 +607,7 @@ AnnData object with n_obs × n_vars = 14064 × 4000
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span>
@@ -741,45 +615,44 @@ AnnData object with n_obs × n_vars = 14064 × 4000
     <span class="s1">&#39;W_scpca_ref&#39;</span><span class="p">,</span>
     <span class="n">llm</span><span class="p">,</span>
     <span class="n">factors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">],</span>
-    <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;scpca_annotation&#39;</span><span class="p">,</span>
-    <span class="n">num_samples</span><span class="o">=</span><span class="mi">4</span>
+    <span class="n">top_genes</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;scpca_annotation&#39;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;scpca_annotation&#39;</span><span class="p">][</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;scpca_annotation&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;0+&#39;: &#39;Ciliated epithelial cell&#39;,
- &#39;0-&#39;: &#39;Dendritic Cell&#39;,
- &#39;1+&#39;: &#39;B cell&#39;,
- &#39;1-&#39;: &#39;Alveolar type II cells&#39;,
- &#39;2+&#39;: &#39;Club cells (Clara cells)&#39;,
- &#39;2-&#39;: &#39;B cell&#39;,
- &#39;3+&#39;: &#39;B cell&#39;,
- &#39;3-&#39;: &#39;Endothelial cells&#39;,
- &#39;4+&#39;: &#39;Macrophage&#39;,
- &#39;4-&#39;: &#39;B cell&#39;,
- &#39;5+&#39;: &#39;Endothelial cell&#39;,
- &#39;5-&#39;: &#39;Ciliated Epithelial Cell&#39;,
- &#39;6+&#39;: &#39;CD8+ T cell&#39;,
- &#39;6-&#39;: &#39;Dendritic Cell&#39;}
+[{&#39;factor&#39;: &#39;0&#39;, &#39;sign&#39;: &#39;+&#39;, &#39;target&#39;: &#39;Ciliated epithelial cell&#39;},
+ {&#39;factor&#39;: &#39;0&#39;, &#39;sign&#39;: &#39;-&#39;, &#39;target&#39;: &#39;Macrophage&#39;},
+ {&#39;factor&#39;: &#39;1&#39;, &#39;sign&#39;: &#39;+&#39;, &#39;target&#39;: &#39;B cell&#39;},
+ {&#39;factor&#39;: &#39;1&#39;, &#39;sign&#39;: &#39;-&#39;, &#39;target&#39;: &#39;Alveolar type II cell&#39;},
+ {&#39;factor&#39;: &#39;2&#39;, &#39;sign&#39;: &#39;+&#39;, &#39;target&#39;: &#39;Club cells (Clara cells)&#39;},
+ {&#39;factor&#39;: &#39;2&#39;, &#39;sign&#39;: &#39;-&#39;, &#39;target&#39;: &#39;B cell&#39;},
+ {&#39;factor&#39;: &#39;3&#39;, &#39;sign&#39;: &#39;+&#39;, &#39;target&#39;: &#39;B cells&#39;},
+ {&#39;factor&#39;: &#39;3&#39;, &#39;sign&#39;: &#39;-&#39;, &#39;target&#39;: &#39;Endothelial cells&#39;},
+ {&#39;factor&#39;: &#39;4&#39;, &#39;sign&#39;: &#39;+&#39;, &#39;target&#39;: &#39;Macrophage&#39;},
+ {&#39;factor&#39;: &#39;4&#39;, &#39;sign&#39;: &#39;-&#39;, &#39;target&#39;: &#39;B cell&#39;},
+ {&#39;factor&#39;: &#39;5&#39;, &#39;sign&#39;: &#39;+&#39;, &#39;target&#39;: &#39;Endothelial cell&#39;},
+ {&#39;factor&#39;: &#39;5&#39;, &#39;sign&#39;: &#39;-&#39;, &#39;target&#39;: &#39;Ciliated Epithelial Cell&#39;},
+ {&#39;factor&#39;: &#39;6&#39;, &#39;sign&#39;: &#39;+&#39;, &#39;target&#39;: &#39;CD8+ T cell&#39;},
+ {&#39;factor&#39;: &#39;6&#39;, &#39;sign&#39;: &#39;-&#39;, &#39;target&#39;: &#39;Macrophage&#39;}]
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_embedding</span><span class="p">(</span>
@@ -798,7 +671,7 @@ AnnData object with n_obs × n_vars = 14064 × 4000
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_factor_analysis_28_0.png" src="../_images/notebooks_factor_analysis_28_0.png" />
+<img alt="../_images/notebooks_factor_analysis_23_0.png" src="../_images/notebooks_factor_analysis_23_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
