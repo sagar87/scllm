@@ -479,18 +479,18 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 <p>To annotate the cells we simply use the <code class="docutils literal notranslate"><span class="pre">annotate_cluster</span></code> function. This will iterate through each cluster and try to determine the most likely cell types.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_genes</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;scllm_annotation&#39;</span><span class="p">,</span> <span class="s1">&#39;louvain&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cluster_annotation&#39;</span><span class="p">,</span> <span class="s1">&#39;louvain&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -501,12 +501,35 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <img alt="../_images/notebooks_cell_types_11_0.png" src="../_images/notebooks_cell_types_11_0.png" />
 </div>
 </div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="n">pbmc</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;cluster_annotation&#39;</span><span class="p">][</span><span class="s1">&#39;var_names&#39;</span><span class="p">],</span> <span class="n">groupby</span><span class="o">=</span><span class="s1">&#39;cluster_annotation&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING: Gene labels are not shown when more than 50 genes are visualized. To show gene labels set `show_gene_labels=True`
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_cell_types_12_1.png" src="../_images/notebooks_cell_types_12_1.png" />
+</div>
+</div>
 </section>
 <section id="Angelidis">
 <h2>Angelidis<a class="headerlink" href="#Angelidis" title="Permalink to this heading">#</a></h2>
 <p>In this example we will use the <code class="docutils literal notranslate"><span class="pre">annotate_cluster</span></code> function to annotate the cells in the Angelidis dataset.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_h5ad</span><span class="p">(</span><span class="s1">&#39;/Users/harald/Downloads/umap_1.h5ad&#39;</span><span class="p">)</span>
@@ -514,7 +537,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;cell_type&#39;</span><span class="p">)</span>
@@ -525,11 +548,11 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_cell_types_15_0.png" src="../_images/notebooks_cell_types_15_0.png" />
+<img alt="../_images/notebooks_cell_types_16_0.png" src="../_images/notebooks_cell_types_16_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">leiden</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;igraph&quot;</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">neighbors_key</span><span class="o">=</span><span class="s1">&#39;X_scPCA&#39;</span><span class="p">)</span>
@@ -537,7 +560,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;leiden&#39;</span><span class="p">,</span> <span class="s1">&#39;cell_type&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -548,11 +571,11 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_cell_types_17_0.png" src="../_images/notebooks_cell_types_17_0.png" />
+<img alt="../_images/notebooks_cell_types_18_0.png" src="../_images/notebooks_cell_types_18_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">angelidis</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">&#39;log1p&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">angelidis</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="s1">&#39;counts&#39;</span><span class="p">])</span>
@@ -560,39 +583,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span>
-    <span class="n">angelidis</span><span class="p">,</span>
-    <span class="s1">&#39;leiden&#39;</span><span class="p">,</span>
-    <span class="n">llm</span><span class="p">,</span>
-    <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">num_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;Keep in mind that cells stem from lung tissue.&quot;</span><span class="p">,</span>
-    <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;log1p&#39;</span><span class="p">,</span>
-    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;wilcoxon&#39;</span>
-    <span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cell_type&#39;</span><span class="p">,</span> <span class="s1">&#39;scllm_annotation&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_cell_types_20_0.png" src="../_images/notebooks_cell_types_20_0.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span>
@@ -601,6 +592,61 @@ AnnData object with n_obs × n_vars = 2638 × 1838
     <span class="n">llm</span><span class="p">,</span>
     <span class="n">top_genes</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
     <span class="n">num_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;Keep in mind that cells stem from lung tissue.&quot;</span><span class="p">,</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;log1p&#39;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;wilcoxon&#39;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cell_type&#39;</span><span class="p">,</span> <span class="s1">&#39;cluster_annotation&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_cell_types_21_0.png" src="../_images/notebooks_cell_types_21_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="n">angelidis</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;cluster_annotation&#39;</span><span class="p">][</span><span class="s1">&#39;var_names&#39;</span><span class="p">],</span> <span class="n">groupby</span><span class="o">=</span><span class="s1">&#39;cluster_annotation&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING: Gene labels are not shown when more than 50 genes are visualized. To show gene labels set `show_gene_labels=True`
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_cell_types_22_1.png" src="../_images/notebooks_cell_types_22_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span>
+    <span class="n">angelidis</span><span class="p">,</span>
+    <span class="s1">&#39;leiden&#39;</span><span class="p">,</span>
+    <span class="n">llm</span><span class="p">,</span>
+    <span class="n">top_genes</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;alternative_annotation&#39;</span><span class="p">,</span>
     <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;log1p&#39;</span><span class="p">,</span>
     <span class="n">method</span><span class="o">=</span><span class="s1">&#39;wilcoxon&#39;</span>
@@ -609,7 +655,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">angelidis</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_scPCA_umap&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cell_type&#39;</span><span class="p">,</span> <span class="s1">&#39;alternative_annotation&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -620,7 +666,7 @@ AnnData object with n_obs × n_vars = 2638 × 1838
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_cell_types_22_0.png" src="../_images/notebooks_cell_types_22_0.png" />
+<img alt="../_images/notebooks_cell_types_24_0.png" src="../_images/notebooks_cell_types_24_0.png" />
 </div>
 </div>
 <div class="nbinput nblast docutils container">
