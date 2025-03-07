@@ -1,0 +1,912 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Analyzing Visium Data with NMF &#8212; scllm 0.1.4 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/nmf';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api.html" />
+    <link rel="prev" title="Factor analysis" href="factor_analysis.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">scllm 0.1.4 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="cell_types.html">Annotate cell types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="factor_analysis.html">Factor analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Analyzing Visium Data with NMF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/scllm.tl.html">scllm.tl</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/sagar87/scllm" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/sagar87/scllm/edit/main/docs/notebooks/nmf.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/sagar87/scllm/issues/new?title=Issue%20on%20page%20%2Fnotebooks/nmf.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/nmf.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Analyzing Visium Data with NMF</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Summary">Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Analyzing-Visium-Data-with-NMF">
+<h1>Analyzing Visium Data with NMF<a class="headerlink" href="#Analyzing-Visium-Data-with-NMF" title="Permalink to this heading">#</a></h1>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Permalink to this heading">#</a></h2>
+<p>In this code, we are analyzing spatial transcriptomics data from a mouse brain sample. We start by loading necessary libraries and the dataset, which includes gene expression counts and spatial information. We perform quality control by filtering cells and genes based on specific criteria, normalizing the data, and identifying highly variable genes. Next, we apply Non-negative Matrix Factorization (NMF) to reduce the dimensionality of the data, extracting ten components that represent underlying
+biological factors. We then annotate these factors using a language model to provide biological context. Finally, we visualize the spatial distribution of both the NMF components and their annotations, allowing us to interpret the spatial patterns of gene expression in the brain tissue.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enter your API key for ChatGPT</span>
+<span class="c1"># import os</span>
+<span class="c1"># os.environ[&quot;OPENAI_API_KEY&quot;] = &quot;Enter your API key here.&quot;</span>
+<span class="c1"># Or alternatively save your OPENAI key in a .env file and load it via dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="n">load_dotenv</span><span class="p">()</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scllm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">squidpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sq</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.decomposition</span><span class="w"> </span><span class="kn">import</span> <span class="n">NMF</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/dask/dataframe/__init__.py:31: FutureWarning: The legacy Dask DataFrame implementation is deprecated and will be removed in a future version. Set the configuration option `dataframe.query-planning` to `True` or None to enable the new Dask Dataframe implementation and silence this warning.
+  warnings.warn(
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/anndata/utils.py:429: FutureWarning: Importing read_text from `anndata` is deprecated. Import anndata.io.read_text instead.
+  warnings.warn(msg, FutureWarning)
+</pre></div></div>
+</div>
+<p>In these lines of code, we first set a variable called <code class="docutils literal notranslate"><span class="pre">openai_model</span></code> to the string <code class="docutils literal notranslate"><span class="pre">&quot;gpt-4o-mini&quot;</span></code>, which specifies the version of the OpenAI model we want to use. Then, we create an instance of <code class="docutils literal notranslate"><span class="pre">ChatOpenAI</span></code> and assign it to the variable <code class="docutils literal notranslate"><span class="pre">llm</span></code>. We set the <code class="docutils literal notranslate"><span class="pre">temperature</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">0.0</span></code>, which means we want the model to generate responses that are more deterministic and focused, rather than random or creative.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o-mini&quot;</span>
+<span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">openai_model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Next, we’re downloading some data files related to a spatial transcriptomics experiment on mouse brain tissue.</p>
+<ol class="arabic simple">
+<li><p>We use <code class="docutils literal notranslate"><span class="pre">wget</span></code> to fetch two files from the 10x Genomics website: one is an HDF5 file containing filtered feature-barcode matrix data, and the other is a tar.gz file that contains spatial data.</p></li>
+<li><p>We then move both downloaded files into a directory called <code class="docutils literal notranslate"><span class="pre">data</span></code> for better organization.</p></li>
+<li><p>Next, we extract the contents of the tar.gz file, which will create a new directory called <code class="docutils literal notranslate"><span class="pre">spatial</span></code> that holds the spatial data.</p></li>
+<li><p>Finally, we clean up by removing the tar.gz file since we no longer need it after extraction.</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># %%sh</span>
+<span class="c1"># wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Mouse_Brain_Sagittal_Anterior/V1_Mouse_Brain_Sagittal_Anterior_filtered_feature_bc_matrix.h5</span>
+<span class="c1"># wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Mouse_Brain_Sagittal_Anterior/V1_Mouse_Brain_Sagittal_Anterior_spatial.tar.gz</span>
+<span class="c1"># mv V1_Mouse_Brain_Sagittal_Anterior_filtered_feature_bc_matrix.h5 data</span>
+<span class="c1"># mv V1_Mouse_Brain_Sagittal_Anterior_spatial.tar.gz data</span>
+<span class="c1"># tar -xzf data/V1_Mouse_Brain_Sagittal_Anterior_spatial.tar.gz</span>
+<span class="c1"># rm data/V1_Mouse_Brain_Sagittal_Anterior_spatial.tar.gz</span>
+<span class="c1"># mv spatial data</span>
+</pre></div>
+</div>
+</div>
+<p>We start by loading the visium data using the <code class="docutils literal notranslate"><span class="pre">sq.read.visium</span></code> function. We specify the directory where our data is stored (“data”) and point to a specific counts file that contains the gene expression data for the mouse brain tissue.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">sq</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">visium</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">counts_file</span><span class="o">=</span><span class="s2">&quot;V1_Mouse_Brain_Sagittal_Anterior_filtered_feature_bc_matrix.h5&quot;</span><span class="p">)</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">var_names_make_unique</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/anndata/_core/anndata.py:1758: UserWarning: Variable names are not unique. To make them unique, call `.var_names_make_unique`.
+  utils.warn_names_duplicates(&#34;var&#34;)
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/anndata/_core/anndata.py:1758: UserWarning: Variable names are not unique. To make them unique, call `.var_names_make_unique`.
+  utils.warn_names_duplicates(&#34;var&#34;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 2695 × 32285
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;
+    var: &#39;gene_ids&#39;, &#39;feature_types&#39;, &#39;genome&#39;
+    uns: &#39;spatial&#39;
+    obsm: &#39;spatial&#39;
+</pre></div></div>
+</div>
+<p>In these lines of code, we first create a new column in the <code class="docutils literal notranslate"><span class="pre">adata.var</span></code> DataFrame called “mt”. We set this column to <code class="docutils literal notranslate"><span class="pre">True</span></code> for any gene names that start with “mt-”, which indicates mitochondrial genes.</p>
+<p>Then, we use the <code class="docutils literal notranslate"><span class="pre">calculate_qc_metrics</span></code> function from the <code class="docutils literal notranslate"><span class="pre">scanpy</span></code> library to compute quality control metrics for our data. We specifically tell it to include our “mt” variable in the calculations. This helps us assess the quality of our single-cell RNA-seq data by looking at the proportion of mitochondrial gene expression, which can indicate cell health.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">var</span><span class="p">[</span><span class="s2">&quot;mt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">var_names</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;mt-&quot;</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">calculate_qc_metrics</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">qc_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mt&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Next, we’re creating a series of histograms to visualize some data from an AnnData object, <code class="docutils literal notranslate"><span class="pre">adata</span></code>.</p>
+<p>First, we set up a figure with four subplots arranged in one row. Each subplot will display a histogram.</p>
+<ol class="arabic simple">
+<li><p>In the first subplot (<code class="docutils literal notranslate"><span class="pre">axs[0]</span></code>), we plot the distribution of <code class="docutils literal notranslate"><span class="pre">total_counts</span></code> from <code class="docutils literal notranslate"><span class="pre">adata.obs</span></code>, which represents the total number of counts for each cell. We don’t include a kernel density estimate (KDE) here.</p></li>
+<li><p>The second subplot (<code class="docutils literal notranslate"><span class="pre">axs[1]</span></code>) focuses on the same <code class="docutils literal notranslate"><span class="pre">total_counts</span></code> data but only for values less than 10,000. We specify 40 bins to get a more detailed view of this subset.</p></li>
+<li><p>Moving to the third subplot (<code class="docutils literal notranslate"><span class="pre">axs[2]</span></code>), we visualize <code class="docutils literal notranslate"><span class="pre">n_genes_by_counts</span></code>, which indicates the number of genes detected per cell. This time, we use 60 bins for the histogram.</p></li>
+<li><p>Finally, in the fourth subplot (<code class="docutils literal notranslate"><span class="pre">axs[3]</span></code>), we again look at <code class="docutils literal notranslate"><span class="pre">n_genes_by_counts</span></code>, but we filter for values less than 4,000, using the same 60 bins.</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;total_counts&quot;</span><span class="p">],</span> <span class="n">kde</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;total_counts&quot;</span><span class="p">][</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;total_counts&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">10000</span><span class="p">],</span> <span class="n">kde</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;n_genes_by_counts&quot;</span><span class="p">],</span> <span class="n">kde</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;n_genes_by_counts&quot;</span><span class="p">][</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">[</span><span class="s2">&quot;n_genes_by_counts&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">4000</span><span class="p">],</span> <span class="n">kde</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_nmf_13_0.png" src="../_images/notebooks_nmf_13_0.png" />
+</div>
+</div>
+<p>First, we use <code class="docutils literal notranslate"><span class="pre">sc.pp.filter_cells(adata,</span> <span class="pre">max_counts=50000)</span></code> to filter out any cells that have more than 50,000 total counts. This helps us remove potential outliers or low-quality cells that might skew our analysis.</p>
+<p>Next, we filter the cells again with <code class="docutils literal notranslate"><span class="pre">adata</span> <span class="pre">=</span> <span class="pre">adata[adata.obs.pct_counts_mt</span> <span class="pre">&lt;</span> <span class="pre">20]</span></code>. Here, we’re keeping only the cells where the percentage of counts coming from mitochondrial genes is less than 20%. High mitochondrial content can indicate stressed or dying cells, so we want to exclude those.</p>
+<p>Finally, we apply <code class="docutils literal notranslate"><span class="pre">sc.pp.filter_genes(adata,</span> <span class="pre">min_cells=10)</span></code> to filter out genes that are expressed in fewer than 10 cells. This step helps us focus on genes that are more reliably detected across our dataset.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_cells</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">max_counts</span><span class="o">=</span><span class="mi">50000</span><span class="p">)</span>
+<span class="n">adata</span> <span class="o">=</span> <span class="n">adata</span><span class="p">[</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">pct_counts_mt</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">]</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">filter_genes</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">min_cells</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/harald/Documents/opt/scllm/.venv/lib/python3.12/site-packages/scanpy/preprocessing/_simple.py:287: ImplicitModificationWarning: Trying to modify attribute `.var` of view, initializing view as actual.
+  adata.var[&#34;n_cells&#34;] = number
+</pre></div></div>
+</div>
+<ol class="arabic simple">
+<li><p><strong>Normalization</strong>: The first line, <code class="docutils literal notranslate"><span class="pre">sc.pp.normalize_total(adata,</span> <span class="pre">inplace=True)</span></code>, normalizes the total counts for each cell to ensure that we can compare gene expression levels across cells. By setting <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code>, we modify the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object directly.</p></li>
+<li><p><strong>Log Transformation</strong>: Next, <code class="docutils literal notranslate"><span class="pre">sc.pp.log1p(adata)</span></code> applies a log transformation to the data. This is important because it helps to stabilize the variance and makes the data more normally distributed, which is often a requirement for downstream analyses.</p></li>
+<li><p><strong>Identifying Highly Variable Genes</strong>: Finally, <code class="docutils literal notranslate"><span class="pre">sc.pp.highly_variable_genes(adata,</span> <span class="pre">flavor=&quot;seurat&quot;,</span> <span class="pre">n_top_genes=2000,</span> <span class="pre">subset=True)</span></code> identifies the top 2000 highly variable genes using the “Seurat” method. This step is crucial because it helps us focus on the most informative genes for downstream analysis, like clustering or differential expression. The <code class="docutils literal notranslate"><span class="pre">subset=True</span></code> option means we’ll keep only these highly variable genes in our <code class="docutils literal notranslate"><span class="pre">adata</span></code> object.</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">normalize_total</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">highly_variable_genes</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;seurat&quot;</span><span class="p">,</span> <span class="n">n_top_genes</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Next, we’re using the <code class="docutils literal notranslate"><span class="pre">sc.pl.spatial</span></code> function from the Scanpy library to visualize spatial transcriptomics data stored in the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">img_key=&quot;hires&quot;</span></code> argument specifies that we want to use the high-resolution image associated with our spatial data for the plot.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">color</span></code> parameter takes a list of two metrics: <code class="docutils literal notranslate"><span class="pre">total_counts</span></code> and <code class="docutils literal notranslate"><span class="pre">n_genes_by_counts</span></code>. This means we want to color the spatial plot based on these two features, which represent the total number of counts and the number of genes detected in each spot, respectively.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">img_key</span><span class="o">=</span><span class="s2">&quot;hires&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;total_counts&quot;</span><span class="p">,</span> <span class="s2">&quot;n_genes_by_counts&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/var/folders/_4/qhxlw4x53134ffft2v5pt3nh0000gn/T/ipykernel_55465/3976244732.py:1: FutureWarning: Use `squidpy.pl.spatial_scatter` instead.
+  sc.pl.spatial(adata, img_key=&#34;hires&#34;, color=[&#34;total_counts&#34;, &#34;n_genes_by_counts&#34;])
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_nmf_19_1.png" src="../_images/notebooks_nmf_19_1.png" />
+</div>
+</div>
+<p>Here, we’re creating an instance of the NMF (Non-negative Matrix Factorization) class. We set <code class="docutils literal notranslate"><span class="pre">n_components=10</span></code>, which means we want to factor our data into 10 different components or features. This is useful for tasks like dimensionality reduction or topic modeling. The <code class="docutils literal notranslate"><span class="pre">max_iter=1000</span></code> parameter tells the algorithm to run for a maximum of 1000 iterations to find the best factorization. This helps ensure that we get a good approximation of our data.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nmf</span> <span class="o">=</span> <span class="n">NMF</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>First, <code class="docutils literal notranslate"><span class="pre">Z</span> <span class="pre">=</span> <span class="pre">nmf.fit_transform(adata.X.toarray())</span></code> takes our input data, which is in a sparse format (from <code class="docutils literal notranslate"><span class="pre">adata.X</span></code>), and converts it to a dense array with <code class="docutils literal notranslate"><span class="pre">.toarray()</span></code>. Then, we fit the NMF model to this data and transform it, resulting in <code class="docutils literal notranslate"><span class="pre">Z</span></code>, which contains the lower-dimensional representation of our original data.</p>
+<p>Next, <code class="docutils literal notranslate"><span class="pre">W</span> <span class="pre">=</span> <span class="pre">nmf.components_</span></code> retrieves the components learned by the NMF model. This <code class="docutils literal notranslate"><span class="pre">W</span></code> matrix represents the basis vectors that help us understand the underlying structure of our data.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Z</span> <span class="o">=</span> <span class="n">nmf</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">adata</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">nmf</span><span class="o">.</span><span class="n">components_</span>
+</pre></div>
+</div>
+</div>
+<p>First, we store the matrix <code class="docutils literal notranslate"><span class="pre">Z</span></code> in the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">adata</span></code> under the key <code class="docutils literal notranslate"><span class="pre">'X_nmf'</span></code>.</p>
+<p>Next, we save the matrix <code class="docutils literal notranslate"><span class="pre">W</span></code> transposed (using <code class="docutils literal notranslate"><span class="pre">W.T</span></code>) in the <code class="docutils literal notranslate"><span class="pre">varm</span></code> attribute under the key <code class="docutils literal notranslate"><span class="pre">'NMF'</span></code>.</p>
+<p>Finally, we concatenate a new DataFrame created from <code class="docutils literal notranslate"><span class="pre">Z</span></code> to the existing <code class="docutils literal notranslate"><span class="pre">obs</span></code> DataFrame in <code class="docutils literal notranslate"><span class="pre">adata</span></code>. We label the new columns as <code class="docutils literal notranslate"><span class="pre">NMF0</span></code> to <code class="docutils literal notranslate"><span class="pre">NMF9</span></code>, which represent the first ten components from our NMF. This way, we can easily access and analyze these new features alongside our original observations.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">obsm</span><span class="p">[</span><span class="s1">&#39;X_nmf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Z</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">varm</span><span class="p">[</span><span class="s1">&#39;NMF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span>
+<span class="n">adata</span><span class="o">.</span><span class="n">obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">adata</span><span class="o">.</span><span class="n">obs</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;NMF</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)])],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 2448 × 2000
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;n_genes_by_counts&#39;, &#39;log1p_n_genes_by_counts&#39;, &#39;total_counts&#39;, &#39;log1p_total_counts&#39;, &#39;pct_counts_in_top_50_genes&#39;, &#39;pct_counts_in_top_100_genes&#39;, &#39;pct_counts_in_top_200_genes&#39;, &#39;pct_counts_in_top_500_genes&#39;, &#39;total_counts_mt&#39;, &#39;log1p_total_counts_mt&#39;, &#39;pct_counts_mt&#39;, &#39;n_counts&#39;, &#39;NMF0&#39;, &#39;NMF1&#39;, &#39;NMF2&#39;, &#39;NMF3&#39;, &#39;NMF4&#39;, &#39;NMF5&#39;, &#39;NMF6&#39;, &#39;NMF7&#39;, &#39;NMF8&#39;, &#39;NMF9&#39;
+    var: &#39;gene_ids&#39;, &#39;feature_types&#39;, &#39;genome&#39;, &#39;mt&#39;, &#39;n_cells_by_counts&#39;, &#39;mean_counts&#39;, &#39;log1p_mean_counts&#39;, &#39;pct_dropout_by_counts&#39;, &#39;total_counts&#39;, &#39;log1p_total_counts&#39;, &#39;n_cells&#39;, &#39;highly_variable&#39;, &#39;means&#39;, &#39;dispersions&#39;, &#39;dispersions_norm&#39;
+    uns: &#39;spatial&#39;, &#39;log1p&#39;, &#39;hvg&#39;
+    obsm: &#39;spatial&#39;, &#39;X_nmf&#39;
+    varm: &#39;NMF&#39;
+</pre></div></div>
+</div>
+<p>In the following, we’re using the <code class="docutils literal notranslate"><span class="pre">sc.pl.spatial</span></code> function from the Scanpy library to visualize spatial transcriptomics data stored in the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object.</p>
+<p>We specify <code class="docutils literal notranslate"><span class="pre">img_key=&quot;hires&quot;</span></code> to indicate that we want to use the high-resolution image associated with our spatial data. The <code class="docutils literal notranslate"><span class="pre">color</span></code> parameter is a list of gene expression components (like “NMF0” to “NMF9”) that we want to visualize on the spatial plot. Each of these components represents a different aspect of the data, likely derived from a non-negative matrix factorization (NMF) analysis.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">img_key</span><span class="o">=</span><span class="s2">&quot;hires&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;NMF0&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF1&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF2&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF3&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF4&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF5&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF6&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF7&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF8&quot;</span><span class="p">,</span> <span class="s2">&quot;NMF9&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/var/folders/_4/qhxlw4x53134ffft2v5pt3nh0000gn/T/ipykernel_55465/4223846374.py:1: FutureWarning: Use `squidpy.pl.spatial_scatter` instead.
+  sc.pl.spatial(adata, img_key=&#34;hires&#34;, color=[&#34;NMF0&#34;, &#34;NMF1&#34;, &#34;NMF2&#34;, &#34;NMF3&#34;, &#34;NMF4&#34;, &#34;NMF5&#34;, &#34;NMF6&#34;, &#34;NMF7&#34;, &#34;NMF8&#34;, &#34;NMF9&#34;])
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_nmf_28_1.png" src="../_images/notebooks_nmf_28_1.png" />
+</div>
+</div>
+<p>In this code snippet, we’re using the <code class="docutils literal notranslate"><span class="pre">annotate_factor</span></code> function from the <code class="docutils literal notranslate"><span class="pre">sl.tl</span></code> module to annotate our AnnData object, <code class="docutils literal notranslate"><span class="pre">adata</span></code>.</p>
+<p>Here’s what each part does:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">varm_key=&quot;NMF&quot;</span></code>: This specifies that we’re pulling factor information from the “NMF” key in the <code class="docutils literal notranslate"><span class="pre">varm</span></code> attribute of our AnnData object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">llm=llm</span></code>: This is where we pass in a variable <code class="docutils literal notranslate"><span class="pre">llm</span></code>, which is the language model we want to use for the annotation process.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sign=&quot;+&quot;</span></code>: This indicates that we want to focus on positive contributions in our factor annotations (NMF has only postive loadings).</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">,</span>
+    <span class="n">varm_key</span><span class="o">=</span><span class="s2">&quot;NMF&quot;</span><span class="p">,</span>
+    <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
+    <span class="n">sign</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We can inspect the annotations that we retrieved.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;factor_annotation&#39;</span><span class="p">][</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;0+&#39;: &#39;Erythrocyte&#39;,
+ &#39;1+&#39;: &#39;Oligodendrocyte&#39;,
+ &#39;2+&#39;: &#39;Medium Spiny Neuron&#39;,
+ &#39;3+&#39;: &#39;Purkinje neuron&#39;,
+ &#39;4+&#39;: &#39;Excitatory Neuron&#39;,
+ &#39;5+&#39;: &#39;Neuroendocrine Cell&#39;,
+ &#39;6+&#39;: &#39;Astrocyte&#39;,
+ &#39;7+&#39;: &#39;Hepatocyte&#39;,
+ &#39;8+&#39;: &#39;Excitatory Neuron&#39;,
+ &#39;9+&#39;: &#39;Inhibitory Interneuron&#39;}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 2448 × 2000
+    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;n_genes_by_counts&#39;, &#39;log1p_n_genes_by_counts&#39;, &#39;total_counts&#39;, &#39;log1p_total_counts&#39;, &#39;pct_counts_in_top_50_genes&#39;, &#39;pct_counts_in_top_100_genes&#39;, &#39;pct_counts_in_top_200_genes&#39;, &#39;pct_counts_in_top_500_genes&#39;, &#39;total_counts_mt&#39;, &#39;log1p_total_counts_mt&#39;, &#39;pct_counts_mt&#39;, &#39;n_counts&#39;, &#39;NMF0&#39;, &#39;NMF1&#39;, &#39;NMF2&#39;, &#39;NMF3&#39;, &#39;NMF4&#39;, &#39;NMF5&#39;, &#39;NMF6&#39;, &#39;NMF7&#39;, &#39;NMF8&#39;, &#39;NMF9&#39;
+    var: &#39;gene_ids&#39;, &#39;feature_types&#39;, &#39;genome&#39;, &#39;mt&#39;, &#39;n_cells_by_counts&#39;, &#39;mean_counts&#39;, &#39;log1p_mean_counts&#39;, &#39;pct_dropout_by_counts&#39;, &#39;total_counts&#39;, &#39;log1p_total_counts&#39;, &#39;n_cells&#39;, &#39;highly_variable&#39;, &#39;means&#39;, &#39;dispersions&#39;, &#39;dispersions_norm&#39;
+    uns: &#39;spatial&#39;, &#39;log1p&#39;, &#39;hvg&#39;, &#39;factor_annotation&#39;
+    obsm: &#39;spatial&#39;, &#39;X_nmf&#39;
+    varm: &#39;NMF&#39;
+</pre></div></div>
+</div>
+<p>To obtain a overview about the components of the data, we’re using a function called <code class="docutils literal notranslate"><span class="pre">factor_stripplot</span></code> from the <code class="docutils literal notranslate"><span class="pre">sl.pl</span></code> module.</p>
+<p>We pass in <code class="docutils literal notranslate"><span class="pre">adata</span></code>, which is our AnnData object containing the single-cell data we want to visualize. The <code class="docutils literal notranslate"><span class="pre">obsm_key=&quot;X_nmf&quot;</span></code> argument specifies that we want to use the NMF representation of our data stored in the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">adata</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">annotation_key=&quot;factor_annotation&quot;</span></code> argument tells the function to use the annotations related to the factors we want to plot. Essentially, this code generates a strip plot that visualizes how different factors (or clusters) are distributed based on the NMF representation of our data. It’s a handy way to see the relationships and distributions in our single-cell dataset!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_stripplot</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">,</span>
+    <span class="n">obsm_key</span><span class="o">=</span><span class="s2">&quot;X_nmf&quot;</span><span class="p">,</span>
+    <span class="n">annotation_key</span><span class="o">=</span><span class="s2">&quot;factor_annotation&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_nmf_35_0.png" src="../_images/notebooks_nmf_35_0.png" />
+</div>
+</div>
+<p>To undertand how the NMF factors are spatially distributed, we are using the <code class="docutils literal notranslate"><span class="pre">factor_embedding</span></code> function from the <code class="docutils literal notranslate"><span class="pre">sl.pl</span></code> module.</p>
+<p>Here’s the breakdown:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">obsm_key=&quot;X_nmf&quot;</span></code> tells the function to use the NMF embeddings stored in the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">adata</span></code> under the key “X_nmf”.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">basis='spatial'</span></code> indicates that we want to visualize the data in a spatial context.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">annotation_key=&quot;factor_annotation&quot;</span></code> specifies the key for the annotations we want to use for coloring or labeling the points in the plot.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_embedding</span><span class="p">(</span>
+    <span class="n">adata</span><span class="p">,</span>
+    <span class="n">obsm_key</span><span class="o">=</span><span class="s2">&quot;X_nmf&quot;</span><span class="p">,</span>
+    <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial&#39;</span><span class="p">,</span>
+    <span class="n">annotation_key</span><span class="o">=</span><span class="s2">&quot;factor_annotation&quot;</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_nmf_37_0.png" src="../_images/notebooks_nmf_37_0.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="factor_analysis.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Factor analysis</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
