@@ -29,6 +29,8 @@ def mock_adata():
         X=np.random.rand(10, n_genes),  # Random expression data
         var=pd.DataFrame(index=[f"gene{i+1}" for i in range(n_genes)]),
     )
+
+    adata.obsm["X_pca"] = np.random.rand(10, n_factors)
     adata.varm["pca"] = loadings
     return adata
 

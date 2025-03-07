@@ -24,7 +24,7 @@ def factor_stripplot(
 
     if ax is None:
         ax = plt.gca()
-    
+
     data = (
         pd.DataFrame(
             adata.obsm[obsm_key],

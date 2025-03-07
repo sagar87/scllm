@@ -1,5 +1,3 @@
-from typing import List
-
 import matplotlib.pyplot as plt
 from anndata import AnnData
 from matplotlib.axes import Axes
