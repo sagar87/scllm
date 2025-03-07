@@ -12,6 +12,7 @@ Welcome to scllm's documentation!
 
    notebooks/cell_types
    notebooks/factor_analysis
+   notebooks/nmf
 
 
 .. toctree::

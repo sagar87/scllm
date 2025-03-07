@@ -8,3 +8,4 @@ docs/notebooks/data
 .ipynb_checkpoints
 .env
 scratch.ipynb
+tools
