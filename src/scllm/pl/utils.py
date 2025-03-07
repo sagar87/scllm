@@ -165,7 +165,7 @@ def _set_up_subplots(
 
 def _set_up_plot(
     adata: AnnData,
-    varm_key: str,
+    obsm_key: str,
     instances: Union[int, List[int], None],
     func: Callable[..., None],
     ncols: int = 4,
@@ -243,7 +243,7 @@ def _set_up_plot(
         if ax is None:
             fig, ax = plt.subplots(1, 1, figsize=(width, height))
     else:
-        num_plots = adata.varm[varm_key].shape[1]
+        num_plots = adata.obsm[obsm_key].shape[1]
 
         instances = [i for i in range(num_plots)]
         fig, ax = _set_up_subplots(
@@ -259,10 +259,10 @@ def _set_up_plot(
         if isinstance(instances, list):
             instances = instances[0]
 
-        func(adata, varm_key, instances, ax=ax, **kwargs)
+        func(adata, obsm_key, instances, ax=ax, **kwargs)
     else:
         for i, ax_i in zip(instances, ax.flatten()):  # type: ignore
-            func(adata, varm_key, i, ax=ax_i, **kwargs)
+            func(adata, obsm_key, i, ax=ax_i, **kwargs)
 
     return ax
 
