@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 
 import matplotlib.pyplot as plt
 from anndata import AnnData
