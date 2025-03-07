@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List
 
 import matplotlib.pyplot as plt
 from anndata import AnnData
@@ -11,7 +11,7 @@ from .utils import _set_up_cmap, _set_up_plot
 
 def factor_embedding(
     adata: AnnData,
-    obsm_key: Union[str, None] = None,
+    obsm_key: str,
     factors: list[str] | str = "all",
     basis: str = "X_umap",
     annotation_key: str = "scllm_annotation",

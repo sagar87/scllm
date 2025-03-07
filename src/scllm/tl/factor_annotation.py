@@ -4,7 +4,7 @@ import pandas as pd
 import scanpy as sc
 from langchain_core.language_models import BaseLanguageModel
 
-from .chains import construct_term_chain
+from .chains import construct_term_chain_with_genes
 from .utils import _prepare_mapping, _validate_top_genes
 
 
@@ -159,16 +159,13 @@ def annotate_factor(
         data += data_neg
 
     # run the chain
-    chain = construct_term_chain(
-        llm, term=term, extra=extra, passthrough=["factor", "sign", "init"]
-    )
-
+    chain = construct_term_chain_with_genes(llm, term=term, extra=extra)
     out = chain.invoke(data)
 
     # generate the mostlikely mapping
     df = pd.DataFrame(out).assign(
         id=lambda df: df.apply(lambda row: row.factor + row.sign, 1)
     )
-    mapping = _prepare_mapping(df, "id", "target")
+    mapping = _prepare_mapping(df, "id", "term")
 
     adata.uns[key_added] = {"raw": out, "mapping": mapping}
