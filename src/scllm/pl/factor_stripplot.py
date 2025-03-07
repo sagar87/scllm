@@ -6,6 +6,8 @@ import pandas as pd
 import scanpy as sc
 import seaborn as sns
 
+from ..tl.factor_annotation import _validate_factors
+
 
 def factor_stripplot(
     adata: sc.AnnData,
@@ -16,20 +18,17 @@ def factor_stripplot(
     ax: plt.Axes = None,
     **kwargs,
 ):
-    # TODO refactor (also used by annotate factor)
-    if isinstance(factors, str):
-        if factors == "all":
-            factors = [str(i) for i in range(adata.obsm[obsm_key].shape[1])]
-        else:
-            factors = [factors]
+
+    num_factors = adata.obsm[obsm_key].shape[1]
+    factors = _validate_factors(factors, num_factors)
 
     if ax is None:
         ax = plt.gca()
-
+    
     data = (
         pd.DataFrame(
             adata.obsm[obsm_key],
-            columns=[str(i) for i in range(adata.obsm[obsm_key].shape[1])],
+            columns=[str(i) for i in range(num_factors)],
         )
         .loc[:, factors]
         .melt(var_name="Factor", value_name="Weight")

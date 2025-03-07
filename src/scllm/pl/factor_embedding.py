@@ -1,19 +1,20 @@
-from typing import List, Union
+from typing import Union
 
 import matplotlib.pyplot as plt
 from anndata import AnnData
 from matplotlib.axes import Axes
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+from ..tl.factor_annotation import _validate_factors
 from .utils import _set_up_cmap, _set_up_plot
 
 
 def factor_embedding(
     adata: AnnData,
-    varm_key: Union[str, None] = None,
-    factors: Union[int, List[int], None] = None,
+    obsm_key: Union[str, None] = None,
+    factors: list[str] | str = "all",
     basis: str = "X_umap",
-    annotation: str = "scllm_annotation",
+    annotation_key: str = "scllm_annotation",
     cmap: str = "RdBu",
     colorbar_pos: str = "right",
     colorbar_width: str = "3%",
@@ -67,14 +68,16 @@ def factor_embedding(
     -------
         Axes object.
     """
+    num_factors = adata.obsm[obsm_key].shape[1]
+    _validate_factors(factors, num_factors)
 
     ax = _set_up_plot(
         adata,
-        varm_key,
+        obsm_key,
         factors,
         _factor_embedding,
         basis=basis,
-        annotation=annotation,
+        annotation_key=annotation_key,
         cmap=cmap,
         colorbar_pos=colorbar_pos,
         colorbar_width=colorbar_width,
@@ -91,10 +94,10 @@ def factor_embedding(
 
 def _factor_embedding(
     adata: AnnData,
-    varm_key: str,
+    obsm_key: str,
     factor: int,
     basis: str,
-    annotation: str,
+    annotation_key: str,
     cmap: str,
     colorbar_pos: str,
     colorbar_width: str,
@@ -109,7 +112,7 @@ def _factor_embedding(
     else:
         fig = plt.gcf()
 
-    weights = adata.obsm[f"X_{varm_key}"][..., int(factor)]
+    weights = adata.obsm[obsm_key][..., int(factor)]
     cmap, norm = _set_up_cmap(weights, cmap)
 
     im = ax.scatter(
@@ -124,8 +127,8 @@ def _factor_embedding(
     divider = make_axes_locatable(ax)
     cax = divider.append_axes(colorbar_pos, size=colorbar_width, pad=pad)
     fig.colorbar(im, cax=cax, orientation=orientation)
-    if annotation in adata.uns:
-        annot_dict = adata.uns[annotation]["mapping"]
+    if annotation_key in adata.uns:
+        annot_dict = adata.uns[annotation_key]["mapping"]
         title = ""
 
         if f"{factor}-" in annot_dict:

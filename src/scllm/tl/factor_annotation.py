@@ -157,7 +157,7 @@ def annotate_factor(
             adata, varm_key, factors, "-", top_genes, num_samples
         )
         data += data_neg
-        
+
     # run the chain
     chain = construct_term_chain(
         llm, term=term, extra=extra, passthrough=["factor", "sign", "init"]
