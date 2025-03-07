@@ -45,10 +45,10 @@ def _set_up_cmap(
 
     vmin = array.min()
     vmax = array.max()
+    cmap = get_cmap(colormap)
 
     if vmin < 0 and vmax > 0:
         norm = co.TwoSlopeNorm(vmin=vmin, vmax=vmax, vcenter=0)
-        cmap = get_cmap(colormap)
     elif vmin < 0 and vmax < 0:
         # print('min color')
         norm = co.Normalize(vmin=vmin, vmax=0)
@@ -165,7 +165,7 @@ def _set_up_subplots(
 
 def _set_up_plot(
     adata: AnnData,
-    model_key: str,
+    varm_key: str,
     instances: Union[int, List[int], None],
     func: Callable[..., None],
     ncols: int = 4,
@@ -183,14 +183,14 @@ def _set_up_plot(
     ----------
     adata :
         AnnData object containing the data and model information.
-    model_key :
+    varm_key :
         Key to access the model information in `adata.uns`.
     instances :
         Index or list of indices of instances or factors to visualize.
         If None, the function determines the number of instances/factors automatically.
     func :
         Plotting function to visualize each instance/factor.
-        It should accept the following parameters: `adata`, `model_key`, `instance`, and `ax`.
+        It should accept the following parameters: `adata`, `varm_key`, `instance`, and `ax`.
     ncols :
         Number of columns in the subplot grid.
     width :
@@ -210,8 +210,8 @@ def _set_up_plot(
     -----
     - If `instances` is an integer, only a single instance will be plotted.
     - If `instances` is a list of integers, each specified instance will be plotted in separate subplots.
-    - If `instances` is None, the function will determine the number of instances automatically based on the `model_key`.
-    - The `func` plotting function should accept the `adata`, `model_key`, `instance`, and `ax` parameters.
+    - If `instances` is None, the function will determine the number of instances automatically based on the `varm_key`.
+    - The `func` plotting function should accept the `adata`, `varm_key`, `instance`, and `ax` parameters.
       It is responsible for plotting the specific instance or factor.
 
     Examples
@@ -243,11 +243,7 @@ def _set_up_plot(
         if ax is None:
             fig, ax = plt.subplots(1, 1, figsize=(width, height))
     else:
-        model_dict = adata.uns[model_key]
-        if model_key == "pca":
-            num_plots = model_dict["variance"].shape[0]
-        else:
-            num_plots = model_dict["model"]["num_factors"]
+        num_plots = adata.varm[varm_key].shape[1]
 
         instances = [i for i in range(num_plots)]
         fig, ax = _set_up_subplots(
@@ -263,10 +259,10 @@ def _set_up_plot(
         if isinstance(instances, list):
             instances = instances[0]
 
-        func(adata, model_key, instances, ax=ax, **kwargs)
+        func(adata, varm_key, instances, ax=ax, **kwargs)
     else:
         for i, ax_i in zip(instances, ax.flatten()):  # type: ignore
-            func(adata, model_key, i, ax=ax_i, **kwargs)
+            func(adata, varm_key, i, ax=ax_i, **kwargs)
 
     return ax
 
