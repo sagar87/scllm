@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Analyzing Visium Data with NMF &#8212; scllm 0.1.5 documentation</title>
+    <title>Identifying gene signatures in Visium data using NMF and scllm &#8212; scllm 0.1.5 documentation</title>
   
   
   
@@ -48,8 +48,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/nmf';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="API Reference" href="../api.html" />
-    <link rel="prev" title="Factor analysis" href="factor_analysis.html" />
+    <link rel="next" title="Analysing lung cells from aging mice with scllm" href="angelidis.html" />
+    <link rel="prev" title="Welcome to scllm’s documentation!" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -155,9 +155,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="cell_types.html">Annotate cell types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="factor_analysis.html">Factor analysis</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Analyzing Visium Data with NMF</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Identifying gene signatures in Visium data using NMF and scllm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="angelidis.html">Analysing lung cells from aging mice with scllm</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul class="nav bd-sidenav">
@@ -367,7 +366,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Analyzing Visium Data with NMF</h1>
+    <h1>Identifying gene signatures in Visium data using NMF and scllm</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -378,6 +377,9 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Data-preprocessing">Data preprocessing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Applying-NMF">Applying NMF</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotating-factors">Annotating factors</a></li>
 </ul>
             </nav>
         </div>
@@ -389,12 +391,14 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Analyzing-Visium-Data-with-NMF">
-<h1>Analyzing Visium Data with NMF<a class="headerlink" href="#Analyzing-Visium-Data-with-NMF" title="Permalink to this heading">#</a></h1>
+  <section id="Identifying-gene-signatures-in-Visium-data-using-NMF-and-scllm">
+<h1>Identifying gene signatures in Visium data using NMF and scllm<a class="headerlink" href="#Identifying-gene-signatures-in-Visium-data-using-NMF-and-scllm" title="Permalink to this heading">#</a></h1>
 <section id="Summary">
 <h2>Summary<a class="headerlink" href="#Summary" title="Permalink to this heading">#</a></h2>
-<p>In this code, we are analyzing spatial transcriptomics data from a mouse brain sample. We start by loading necessary libraries and the dataset, which includes gene expression counts and spatial information. We perform quality control by filtering cells and genes based on specific criteria, normalizing the data, and identifying highly variable genes. Next, we apply Non-negative Matrix Factorization (NMF) to reduce the dimensionality of the data, extracting ten components that represent underlying
-biological factors. We then annotate these factors using a language model to provide biological context. Finally, we visualize the spatial distribution of both the NMF components and their annotations, allowing us to interpret the spatial patterns of gene expression in the brain tissue.</p>
+<p>In this code, we analyze spatial transcriptomics data from a mouse brain sample using various computational biology libraries. We start by loading the necessary libraries and the dataset, which includes gene expression counts and spatial information. We perform quality control by filtering cells and genes based on specific criteria, followed by normalization and identification of highly variable genes. We then apply Non-negative Matrix Factorization (NMF) to reduce the dimensionality of the
+data, extracting latent factors that represent gene expression patterns. Finally, we annotate these factors using a language model and visualize the results in spatial plots, allowing us to interpret the biological significance of the identified factors in the context of the tissue architecture.</p>
+<p>In this part of the script, we start by loading our environment variables, specifically the OpenAI API key, which is essential for using the ChatGPT model later on. We then import several libraries: <code class="docutils literal notranslate"><span class="pre">scanpy</span></code> for single-cell analysis, <code class="docutils literal notranslate"><span class="pre">scllm</span></code> for factor annotation, <code class="docutils literal notranslate"><span class="pre">squidpy</span></code> for spatial transcriptomics, and <code class="docutils literal notranslate"><span class="pre">seaborn</span></code> and <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for visualization.</p>
+<p>Next, we set up the ChatGPT model with a specified temperature and model type. This model will help us annotate the factors derived from our NMF analysis. The imports and model setup are crucial for the subsequent steps where we process the 10x Visium mouse brain dataset, perform NMF, and finally annotate the resulting factors using the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -428,7 +432,8 @@ biological factors. We then annotate these factors using a language model to pro
   warnings.warn(msg, FutureWarning)
 </pre></div></div>
 </div>
-<p>In these lines of code, we first set a variable called <code class="docutils literal notranslate"><span class="pre">openai_model</span></code> to the string <code class="docutils literal notranslate"><span class="pre">&quot;gpt-4o-mini&quot;</span></code>, which specifies the version of the OpenAI model we want to use. Then, we create an instance of <code class="docutils literal notranslate"><span class="pre">ChatOpenAI</span></code> and assign it to the variable <code class="docutils literal notranslate"><span class="pre">llm</span></code>. We set the <code class="docutils literal notranslate"><span class="pre">temperature</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">0.0</span></code>, which means we want the model to generate responses that are more deterministic and focused, rather than random or creative.</p>
+<p>In these lines, we set up the language model that will help us annotate our data. We specify the model we want to use, which is “gpt-4o-mini,” and then create an instance of <code class="docutils literal notranslate"><span class="pre">ChatOpenAI</span></code> with a temperature of 0.0. This temperature setting means we want the model to generate more deterministic and focused responses, rather than creative or random ones. This is crucial for our task, as we need reliable annotations for the NMF factors derived from our mouse brain dataset. By initializing this
+model, we can later call it to interpret the NMF components and provide meaningful biological insights based on the data we processed.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -438,13 +443,8 @@ biological factors. We then annotate these factors using a language model to pro
 </pre></div>
 </div>
 </div>
-<p>Next, we’re downloading some data files related to a spatial transcriptomics experiment on mouse brain tissue.</p>
-<ol class="arabic simple">
-<li><p>We use <code class="docutils literal notranslate"><span class="pre">wget</span></code> to fetch two files from the 10x Genomics website: one is an HDF5 file containing filtered feature-barcode matrix data, and the other is a tar.gz file that contains spatial data.</p></li>
-<li><p>We then move both downloaded files into a directory called <code class="docutils literal notranslate"><span class="pre">data</span></code> for better organization.</p></li>
-<li><p>Next, we extract the contents of the tar.gz file, which will create a new directory called <code class="docutils literal notranslate"><span class="pre">spatial</span></code> that holds the spatial data.</p></li>
-<li><p>Finally, we clean up by removing the tar.gz file since we no longer need it after extraction.</p></li>
-</ol>
+<p>In this part of the script, we’re downloading the 10x Genomics mouse brain dataset. The first two <code class="docutils literal notranslate"><span class="pre">wget</span></code> commands fetch the filtered feature barcode matrix and the spatial data files. We then move these files into a <code class="docutils literal notranslate"><span class="pre">data</span></code> directory for organization. After that, we extract the spatial data from the tar.gz file using <code class="docutils literal notranslate"><span class="pre">tar</span> <span class="pre">-xzf</span></code>, which unpacks the contents. Finally, we clean up by removing the tar.gz file since we only need the extracted spatial data. This setup is crucial because it
+prepares our data for analysis in the subsequent steps of the script, where we’ll perform quality control, normalization, and NMF analysis.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -460,7 +460,11 @@ biological factors. We then annotate these factors using a language model to pro
 </pre></div>
 </div>
 </div>
-<p>We start by loading the visium data using the <code class="docutils literal notranslate"><span class="pre">sq.read.visium</span></code> function. We specify the directory where our data is stored (“data”) and point to a specific counts file that contains the gene expression data for the mouse brain tissue.</p>
+</section>
+<section id="Data-preprocessing">
+<h2>Data preprocessing<a class="headerlink" href="#Data-preprocessing" title="Permalink to this heading">#</a></h2>
+<p>In these lines, we’re loading the 10x Genomics Visium dataset for the mouse brain. The <code class="docutils literal notranslate"><span class="pre">sq.read.visium</span></code> function reads the spatial transcriptomics data from the specified directory, using the provided counts file. This gives us an AnnData object, <code class="docutils literal notranslate"><span class="pre">adata</span></code>, which is a convenient data structure for handling single-cell data.</p>
+<p>Next, we call <code class="docutils literal notranslate"><span class="pre">adata.var_names_make_unique()</span></code>, which ensures that all gene names in our dataset are unique. This is crucial because duplicate gene names can cause issues during analysis, especially when we want to reference specific genes later on. So, with these lines, we set the stage for further processing and analysis of our spatial transcriptomics data.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -481,8 +485,10 @@ biological factors. We then annotate these factors using a language model to pro
   utils.warn_names_duplicates(&#34;var&#34;)
 </pre></div></div>
 </div>
+<p>In this part of the script, we load a 10x Genomics mouse brain dataset and preprocess it using Squidpy and Scanpy. We start by reading the spatial data and making sure the variable names are unique. Then, we calculate quality control metrics, filtering out low-quality cells and genes. After normalizing and log-transforming the data, we identify highly variable genes. We apply NMF to reduce the dimensionality of the data into 10 components, which we store in the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> and <code class="docutils literal notranslate"><span class="pre">varm</span></code> attributes
+of the AnnData object. Finally, we use the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package to annotate these NMF factors, visualizing the results with strip plots and spatial embeddings to see how the factors relate to the spatial distribution of the data. The <code class="docutils literal notranslate"><span class="pre">adata</span></code> object at the end allows us to inspect the processed data and annotations.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
@@ -490,8 +496,7 @@ biological factors. We then annotate these factors using a language model to pro
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -502,10 +507,10 @@ AnnData object with n_obs × n_vars = 2695 × 32285
     obsm: &#39;spatial&#39;
 </pre></div></div>
 </div>
-<p>In these lines of code, we first create a new column in the <code class="docutils literal notranslate"><span class="pre">adata.var</span></code> DataFrame called “mt”. We set this column to <code class="docutils literal notranslate"><span class="pre">True</span></code> for any gene names that start with “mt-”, which indicates mitochondrial genes.</p>
-<p>Then, we use the <code class="docutils literal notranslate"><span class="pre">calculate_qc_metrics</span></code> function from the <code class="docutils literal notranslate"><span class="pre">scanpy</span></code> library to compute quality control metrics for our data. We specifically tell it to include our “mt” variable in the calculations. This helps us assess the quality of our single-cell RNA-seq data by looking at the proportion of mitochondrial gene expression, which can indicate cell health.</p>
+<p>In these lines, we first create a new column in the <code class="docutils literal notranslate"><span class="pre">adata.var</span></code> DataFrame called “mt” that identifies mitochondrial genes. We do this by checking if the gene names start with “mt-”. This is important because mitochondrial gene expression can indicate cell stress or damage.</p>
+<p>Next, we calculate quality control (QC) metrics for our dataset using <code class="docutils literal notranslate"><span class="pre">sc.pp.calculate_qc_metrics()</span></code>. We specifically look at the “mt” variable we just created. This function adds several QC metrics to the <code class="docutils literal notranslate"><span class="pre">adata.obs</span></code> DataFrame, like the percentage of counts coming from mitochondrial genes, which helps us assess the quality of our single-cell data. By filtering out low-quality cells later, we ensure our analysis is based on reliable data.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span><span class="o">.</span><span class="n">var</span><span class="p">[</span><span class="s2">&quot;mt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">var_names</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;mt-&quot;</span><span class="p">)</span>
@@ -513,14 +518,8 @@ AnnData object with n_obs × n_vars = 2695 × 32285
 </pre></div>
 </div>
 </div>
-<p>Next, we’re creating a series of histograms to visualize some data from an AnnData object, <code class="docutils literal notranslate"><span class="pre">adata</span></code>.</p>
-<p>First, we set up a figure with four subplots arranged in one row. Each subplot will display a histogram.</p>
-<ol class="arabic simple">
-<li><p>In the first subplot (<code class="docutils literal notranslate"><span class="pre">axs[0]</span></code>), we plot the distribution of <code class="docutils literal notranslate"><span class="pre">total_counts</span></code> from <code class="docutils literal notranslate"><span class="pre">adata.obs</span></code>, which represents the total number of counts for each cell. We don’t include a kernel density estimate (KDE) here.</p></li>
-<li><p>The second subplot (<code class="docutils literal notranslate"><span class="pre">axs[1]</span></code>) focuses on the same <code class="docutils literal notranslate"><span class="pre">total_counts</span></code> data but only for values less than 10,000. We specify 40 bins to get a more detailed view of this subset.</p></li>
-<li><p>Moving to the third subplot (<code class="docutils literal notranslate"><span class="pre">axs[2]</span></code>), we visualize <code class="docutils literal notranslate"><span class="pre">n_genes_by_counts</span></code>, which indicates the number of genes detected per cell. This time, we use 60 bins for the histogram.</p></li>
-<li><p>Finally, in the fourth subplot (<code class="docutils literal notranslate"><span class="pre">axs[3]</span></code>), we again look at <code class="docutils literal notranslate"><span class="pre">n_genes_by_counts</span></code>, but we filter for values less than 4,000, using the same 60 bins.</p></li>
-</ol>
+<p>In this part of the code, we create a set of histograms to visualize some key metrics from our spatial transcriptomics data. The first histogram shows the distribution of total counts per cell, giving us an idea of the overall sequencing depth. The second histogram zooms in on cells with total counts below 10,000, helping us identify potential low-quality cells. The third and fourth histograms display the number of genes detected per cell, with the latter focusing on cells with fewer than 4,000
+genes. This helps us assess the quality of our data and filter out low-quality cells later on. Finally, we use <code class="docutils literal notranslate"><span class="pre">plt.tight_layout()</span></code> to ensure our plots are neatly arranged without overlapping.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -538,12 +537,11 @@ AnnData object with n_obs × n_vars = 2695 × 32285
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_nmf_13_0.png" src="../_images/notebooks_nmf_13_0.png" />
+<img alt="../_images/notebooks_nmf_16_0.png" src="../_images/notebooks_nmf_16_0.png" />
 </div>
 </div>
-<p>First, we use <code class="docutils literal notranslate"><span class="pre">sc.pp.filter_cells(adata,</span> <span class="pre">max_counts=50000)</span></code> to filter out any cells that have more than 50,000 total counts. This helps us remove potential outliers or low-quality cells that might skew our analysis.</p>
-<p>Next, we filter the cells again with <code class="docutils literal notranslate"><span class="pre">adata</span> <span class="pre">=</span> <span class="pre">adata[adata.obs.pct_counts_mt</span> <span class="pre">&lt;</span> <span class="pre">20]</span></code>. Here, we’re keeping only the cells where the percentage of counts coming from mitochondrial genes is less than 20%. High mitochondrial content can indicate stressed or dying cells, so we want to exclude those.</p>
-<p>Finally, we apply <code class="docutils literal notranslate"><span class="pre">sc.pp.filter_genes(adata,</span> <span class="pre">min_cells=10)</span></code> to filter out genes that are expressed in fewer than 10 cells. This step helps us focus on genes that are more reliably detected across our dataset.</p>
+<p>In this part of the script, we’re cleaning up our data to ensure quality before diving into analysis. First, <code class="docutils literal notranslate"><span class="pre">sc.pp.filter_cells(adata,</span> <span class="pre">max_counts=50000)</span></code> filters out cells that have more than 50,000 total counts, which helps us remove potential outliers or low-quality cells. Next, we check for mitochondrial gene expression with <code class="docutils literal notranslate"><span class="pre">adata</span> <span class="pre">=</span> <span class="pre">adata[adata.obs.pct_counts_mt</span> <span class="pre">&lt;</span> <span class="pre">20]</span></code>, keeping only cells where less than 20% of their total counts come from mitochondrial genes. High mitochondrial content
+can indicate stressed or dying cells, so we want to filter those out. Finally, <code class="docutils literal notranslate"><span class="pre">sc.pp.filter_genes(adata,</span> <span class="pre">min_cells=10)</span></code> removes genes that are expressed in fewer than 10 cells, helping us focus on genes that are more consistently expressed across our dataset. This step is crucial for ensuring that our downstream analyses are based on reliable data.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -563,11 +561,8 @@ AnnData object with n_obs × n_vars = 2695 × 32285
   adata.var[&#34;n_cells&#34;] = number
 </pre></div></div>
 </div>
-<ol class="arabic simple">
-<li><p><strong>Normalization</strong>: The first line, <code class="docutils literal notranslate"><span class="pre">sc.pp.normalize_total(adata,</span> <span class="pre">inplace=True)</span></code>, normalizes the total counts for each cell to ensure that we can compare gene expression levels across cells. By setting <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code>, we modify the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object directly.</p></li>
-<li><p><strong>Log Transformation</strong>: Next, <code class="docutils literal notranslate"><span class="pre">sc.pp.log1p(adata)</span></code> applies a log transformation to the data. This is important because it helps to stabilize the variance and makes the data more normally distributed, which is often a requirement for downstream analyses.</p></li>
-<li><p><strong>Identifying Highly Variable Genes</strong>: Finally, <code class="docutils literal notranslate"><span class="pre">sc.pp.highly_variable_genes(adata,</span> <span class="pre">flavor=&quot;seurat&quot;,</span> <span class="pre">n_top_genes=2000,</span> <span class="pre">subset=True)</span></code> identifies the top 2000 highly variable genes using the “Seurat” method. This step is crucial because it helps us focus on the most informative genes for downstream analysis, like clustering or differential expression. The <code class="docutils literal notranslate"><span class="pre">subset=True</span></code> option means we’ll keep only these highly variable genes in our <code class="docutils literal notranslate"><span class="pre">adata</span></code> object.</p></li>
-</ol>
+<p>In this part of the script, we first normalize the total counts in our <code class="docutils literal notranslate"><span class="pre">adata</span></code> object using <code class="docutils literal notranslate"><span class="pre">sc.pp.normalize_total(adata,</span> <span class="pre">inplace=True)</span></code>. This step ensures that the total expression levels across all genes are comparable, which is crucial for downstream analyses. Next, we apply a log transformation with <code class="docutils literal notranslate"><span class="pre">sc.pp.log1p(adata)</span></code>, which helps to stabilize variance and make the data more normally distributed, especially for highly skewed count data.</p>
+<p>Then, we identify the highly variable genes using <code class="docutils literal notranslate"><span class="pre">sc.pp.highly_variable_genes(adata,</span> <span class="pre">flavor=&quot;seurat&quot;,</span> <span class="pre">n_top_genes=2000,</span> <span class="pre">subset=True)</span></code>. This function selects the top 2000 genes that show the most variation across cells, which are often the most informative for distinguishing different cell types or states. By subsetting the data to these genes, we focus our analysis on the most relevant features.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -578,9 +573,8 @@ AnnData object with n_obs × n_vars = 2695 × 32285
 </pre></div>
 </div>
 </div>
-<p>Next, we’re using the <code class="docutils literal notranslate"><span class="pre">sc.pl.spatial</span></code> function from the Scanpy library to visualize spatial transcriptomics data stored in the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">img_key=&quot;hires&quot;</span></code> argument specifies that we want to use the high-resolution image associated with our spatial data for the plot.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">color</span></code> parameter takes a list of two metrics: <code class="docutils literal notranslate"><span class="pre">total_counts</span></code> and <code class="docutils literal notranslate"><span class="pre">n_genes_by_counts</span></code>. This means we want to color the spatial plot based on these two features, which represent the total number of counts and the number of genes detected in each spot, respectively.</p>
+<p>In this part of the code, we’re using the <code class="docutils literal notranslate"><span class="pre">sc.pl.spatial</span></code> function from the Scanpy library to visualize our spatial transcriptomics data. Specifically, we’re plotting the spatial distribution of two metrics: <code class="docutils literal notranslate"><span class="pre">total_counts</span></code> and <code class="docutils literal notranslate"><span class="pre">n_genes_by_counts</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">total_counts</span></code> gives us an idea of the overall expression level in each spot, while <code class="docutils literal notranslate"><span class="pre">n_genes_by_counts</span></code> shows how many different genes are detected in those spots. By visualizing these metrics, we can quickly assess the quality of our data and identify any potential issues, like low-quality spots with few genes detected. This step is crucial for understanding the dataset before diving deeper into analyses like NMF.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -602,10 +596,14 @@ AnnData object with n_obs × n_vars = 2695 × 32285
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_nmf_19_1.png" src="../_images/notebooks_nmf_19_1.png" />
+<img alt="../_images/notebooks_nmf_22_1.png" src="../_images/notebooks_nmf_22_1.png" />
 </div>
 </div>
-<p>Here, we’re creating an instance of the NMF (Non-negative Matrix Factorization) class. We set <code class="docutils literal notranslate"><span class="pre">n_components=10</span></code>, which means we want to factor our data into 10 different components or features. This is useful for tasks like dimensionality reduction or topic modeling. The <code class="docutils literal notranslate"><span class="pre">max_iter=1000</span></code> parameter tells the algorithm to run for a maximum of 1000 iterations to find the best factorization. This helps ensure that we get a good approximation of our data.</p>
+</section>
+<section id="Applying-NMF">
+<h2>Applying NMF<a class="headerlink" href="#Applying-NMF" title="Permalink to this heading">#</a></h2>
+<p>In this part of the script, we’re setting up the Non-negative Matrix Factorization (NMF) model. By specifying <code class="docutils literal notranslate"><span class="pre">n_components=10</span></code>, we’re telling the model to identify 10 distinct factors or components from our data, which is crucial for uncovering hidden patterns in the gene expression data from the mouse brain. The <code class="docutils literal notranslate"><span class="pre">max_iter=1000</span></code> parameter allows the algorithm to run for up to 1000 iterations to ensure it converges to a stable solution. After this setup, we fit the NMF model to our data
+matrix (<code class="docutils literal notranslate"><span class="pre">adata.X.toarray()</span></code>) and transform it, which gives us the factor scores stored in <code class="docutils literal notranslate"><span class="pre">Z</span></code>. These scores help us understand the underlying structure of the data, which we can then visualize and annotate.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
@@ -614,8 +612,8 @@ AnnData object with n_obs × n_vars = 2695 × 32285
 </pre></div>
 </div>
 </div>
-<p>First, <code class="docutils literal notranslate"><span class="pre">Z</span> <span class="pre">=</span> <span class="pre">nmf.fit_transform(adata.X.toarray())</span></code> takes our input data, which is in a sparse format (from <code class="docutils literal notranslate"><span class="pre">adata.X</span></code>), and converts it to a dense array with <code class="docutils literal notranslate"><span class="pre">.toarray()</span></code>. Then, we fit the NMF model to this data and transform it, resulting in <code class="docutils literal notranslate"><span class="pre">Z</span></code>, which contains the lower-dimensional representation of our original data.</p>
-<p>Next, <code class="docutils literal notranslate"><span class="pre">W</span> <span class="pre">=</span> <span class="pre">nmf.components_</span></code> retrieves the components learned by the NMF model. This <code class="docutils literal notranslate"><span class="pre">W</span></code> matrix represents the basis vectors that help us understand the underlying structure of our data.</p>
+<p>In these lines, we’re applying Non-negative Matrix Factorization (NMF) to our gene expression data stored in <code class="docutils literal notranslate"><span class="pre">adata.X</span></code>. The <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> method decomposes the data into two matrices: <code class="docutils literal notranslate"><span class="pre">Z</span></code> and <code class="docutils literal notranslate"><span class="pre">W</span></code>. Here, <code class="docutils literal notranslate"><span class="pre">Z</span></code> represents the latent features or components (in our case, 10 components since we set <code class="docutils literal notranslate"><span class="pre">n_components=10</span></code>), which capture the underlying structure of the data. The <code class="docutils literal notranslate"><span class="pre">W</span></code> matrix contains the weights for each gene in relation to these components. Essentially, we’re reducing the
+dimensionality of our data while preserving important patterns, which we can later use for visualization and annotation. This step is crucial for understanding the spatial transcriptomics data from the mouse brain.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -625,9 +623,8 @@ AnnData object with n_obs × n_vars = 2695 × 32285
 </pre></div>
 </div>
 </div>
-<p>First, we store the matrix <code class="docutils literal notranslate"><span class="pre">Z</span></code> in the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">adata</span></code> under the key <code class="docutils literal notranslate"><span class="pre">'X_nmf'</span></code>.</p>
-<p>Next, we save the matrix <code class="docutils literal notranslate"><span class="pre">W</span></code> transposed (using <code class="docutils literal notranslate"><span class="pre">W.T</span></code>) in the <code class="docutils literal notranslate"><span class="pre">varm</span></code> attribute under the key <code class="docutils literal notranslate"><span class="pre">'NMF'</span></code>.</p>
-<p>Finally, we concatenate a new DataFrame created from <code class="docutils literal notranslate"><span class="pre">Z</span></code> to the existing <code class="docutils literal notranslate"><span class="pre">obs</span></code> DataFrame in <code class="docutils literal notranslate"><span class="pre">adata</span></code>. We label the new columns as <code class="docutils literal notranslate"><span class="pre">NMF0</span></code> to <code class="docutils literal notranslate"><span class="pre">NMF9</span></code>, which represent the first ten components from our NMF. This way, we can easily access and analyze these new features alongside our original observations.</p>
+<p>In these lines, we’re storing the results of our NMF (Non-negative Matrix Factorization) analysis. First, we save the transformed data, <code class="docutils literal notranslate"><span class="pre">Z</span></code>, into <code class="docutils literal notranslate"><span class="pre">adata.obsm['X_nmf']</span></code>, which holds our NMF components for further analysis. Next, we store the NMF components themselves, <code class="docutils literal notranslate"><span class="pre">W</span></code>, in <code class="docutils literal notranslate"><span class="pre">adata.varm['NMF']</span></code>, allowing us to reference the basis vectors later. Finally, we concatenate the NMF results with the existing observation data in <code class="docutils literal notranslate"><span class="pre">adata.obs</span></code>, creating new columns named <code class="docutils literal notranslate"><span class="pre">NMF0</span></code> to <code class="docutils literal notranslate"><span class="pre">NMF9</span></code>.
+This way, we can easily access and visualize the NMF factors alongside our original data.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
@@ -638,6 +635,8 @@ AnnData object with n_obs × n_vars = 2695 × 32285
 </pre></div>
 </div>
 </div>
+<p>In this part of the script, we’re looking at the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object, which contains our processed spatial transcriptomics data from the mouse brain. After performing quality control, normalization, and NMF (Non-negative Matrix Factorization) to reduce dimensionality, we store the NMF results in <code class="docutils literal notranslate"><span class="pre">adata.obsm['X_nmf']</span></code> for the transformed data and <code class="docutils literal notranslate"><span class="pre">adata.varm['NMF']</span></code> for the components. We also add the NMF factors as new columns in <code class="docutils literal notranslate"><span class="pre">adata.obs</span></code>, which allows us to visualize and analyze these
+factors later. The subsequent lines use the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package to annotate these NMF factors, helping us understand their biological significance. Finally, we visualize the factor annotations with strip plots and embeddings, giving us insights into the spatial distribution of these factors in the brain tissue.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
@@ -660,8 +659,8 @@ AnnData object with n_obs × n_vars = 2448 × 2000
     varm: &#39;NMF&#39;
 </pre></div></div>
 </div>
-<p>In the following, we’re using the <code class="docutils literal notranslate"><span class="pre">sc.pl.spatial</span></code> function from the Scanpy library to visualize spatial transcriptomics data stored in the <code class="docutils literal notranslate"><span class="pre">adata</span></code> object.</p>
-<p>We specify <code class="docutils literal notranslate"><span class="pre">img_key=&quot;hires&quot;</span></code> to indicate that we want to use the high-resolution image associated with our spatial data. The <code class="docutils literal notranslate"><span class="pre">color</span></code> parameter is a list of gene expression components (like “NMF0” to “NMF9”) that we want to visualize on the spatial plot. Each of these components represents a different aspect of the data, likely derived from a non-negative matrix factorization (NMF) analysis.</p>
+<p>In this part of the script, we’re visualizing the results of our NMF (Non-negative Matrix Factorization) analysis on the spatial transcriptomics data. The <code class="docutils literal notranslate"><span class="pre">sc.pl.spatial</span></code> function is used to create a spatial plot of the mouse brain data, where we specify the <code class="docutils literal notranslate"><span class="pre">img_key=&quot;hires&quot;</span></code> to use the high-resolution image of the tissue. The <code class="docutils literal notranslate"><span class="pre">color</span></code> parameter lists the NMF components we want to visualize—specifically, NMF0 through NMF9. Each of these components represents a different pattern of gene
+expression across the spatial locations in the brain. By plotting them, we can see how these patterns are distributed in the tissue, helping us understand the underlying biological processes.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -683,16 +682,14 @@ AnnData object with n_obs × n_vars = 2448 × 2000
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_nmf_28_1.png" src="../_images/notebooks_nmf_28_1.png" />
+<img alt="../_images/notebooks_nmf_33_1.png" src="../_images/notebooks_nmf_33_1.png" />
 </div>
 </div>
-<p>In this code snippet, we’re using the <code class="docutils literal notranslate"><span class="pre">annotate_factor</span></code> function from the <code class="docutils literal notranslate"><span class="pre">sl.tl</span></code> module to annotate our AnnData object, <code class="docutils literal notranslate"><span class="pre">adata</span></code>.</p>
-<p>Here’s what each part does:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">varm_key=&quot;NMF&quot;</span></code>: This specifies that we’re pulling factor information from the “NMF” key in the <code class="docutils literal notranslate"><span class="pre">varm</span></code> attribute of our AnnData object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">llm=llm</span></code>: This is where we pass in a variable <code class="docutils literal notranslate"><span class="pre">llm</span></code>, which is the language model we want to use for the annotation process.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sign=&quot;+&quot;</span></code>: This indicates that we want to focus on positive contributions in our factor annotations (NMF has only postive loadings).</p></li>
-</ul>
+</section>
+<section id="Annotating-factors">
+<h2>Annotating factors<a class="headerlink" href="#Annotating-factors" title="Permalink to this heading">#</a></h2>
+<p>In this part of the code, we use the <code class="docutils literal notranslate"><span class="pre">annotate_factor</span></code> function from the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package to annotate the factors we obtained from our NMF analysis. We pass our <code class="docutils literal notranslate"><span class="pre">adata</span></code> object, which contains the NMF results, and specify <code class="docutils literal notranslate"><span class="pre">varm_key=&quot;NMF&quot;</span></code> to indicate where the NMF components are stored. The <code class="docutils literal notranslate"><span class="pre">llm=llm</span></code> argument uses our pre-defined language model for generating annotations. The <code class="docutils literal notranslate"><span class="pre">sign=&quot;+&quot;</span></code> parameter indicates that we want to focus on positive contributions of the factors, and
+<code class="docutils literal notranslate"><span class="pre">num_samples=10</span></code> tells the function to generate 10 samples for annotation. This step helps us interpret the biological significance of the NMF components by providing meaningful labels, making it easier to understand the underlying patterns in our spatial transcriptomics data.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
@@ -707,7 +704,8 @@ AnnData object with n_obs × n_vars = 2448 × 2000
 </pre></div>
 </div>
 </div>
-<p>We can inspect the annotations that we retrieved.</p>
+<p>In this part of the code, <code class="docutils literal notranslate"><span class="pre">adata.uns['factor_annotation']['mapping']</span></code>, we are accessing the annotations generated by the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package after we performed NMF (Non-negative Matrix Factorization) on our spatial transcriptomics data. Specifically, this line retrieves the mapping of the NMF factors to biological annotations, which helps us understand what each factor represents in terms of gene expression patterns. This is crucial for interpreting the results of our NMF analysis, as it
+connects the numerical factors to meaningful biological insights. Essentially, we’re looking at how the different components we extracted relate to specific biological features in the mouse brain dataset.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
@@ -734,31 +732,8 @@ AnnData object with n_obs × n_vars = 2448 × 2000
  &#39;9+&#39;: &#39;Inhibitory Interneuron&#39;}
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-AnnData object with n_obs × n_vars = 2448 × 2000
-    obs: &#39;in_tissue&#39;, &#39;array_row&#39;, &#39;array_col&#39;, &#39;n_genes_by_counts&#39;, &#39;log1p_n_genes_by_counts&#39;, &#39;total_counts&#39;, &#39;log1p_total_counts&#39;, &#39;pct_counts_in_top_50_genes&#39;, &#39;pct_counts_in_top_100_genes&#39;, &#39;pct_counts_in_top_200_genes&#39;, &#39;pct_counts_in_top_500_genes&#39;, &#39;total_counts_mt&#39;, &#39;log1p_total_counts_mt&#39;, &#39;pct_counts_mt&#39;, &#39;n_counts&#39;, &#39;NMF0&#39;, &#39;NMF1&#39;, &#39;NMF2&#39;, &#39;NMF3&#39;, &#39;NMF4&#39;, &#39;NMF5&#39;, &#39;NMF6&#39;, &#39;NMF7&#39;, &#39;NMF8&#39;, &#39;NMF9&#39;
-    var: &#39;gene_ids&#39;, &#39;feature_types&#39;, &#39;genome&#39;, &#39;mt&#39;, &#39;n_cells_by_counts&#39;, &#39;mean_counts&#39;, &#39;log1p_mean_counts&#39;, &#39;pct_dropout_by_counts&#39;, &#39;total_counts&#39;, &#39;log1p_total_counts&#39;, &#39;n_cells&#39;, &#39;highly_variable&#39;, &#39;means&#39;, &#39;dispersions&#39;, &#39;dispersions_norm&#39;
-    uns: &#39;spatial&#39;, &#39;log1p&#39;, &#39;hvg&#39;, &#39;factor_annotation&#39;
-    obsm: &#39;spatial&#39;, &#39;X_nmf&#39;
-    varm: &#39;NMF&#39;
-</pre></div></div>
-</div>
-<p>To obtain a overview about the components of the data, we’re using a function called <code class="docutils literal notranslate"><span class="pre">factor_stripplot</span></code> from the <code class="docutils literal notranslate"><span class="pre">sl.pl</span></code> module.</p>
-<p>We pass in <code class="docutils literal notranslate"><span class="pre">adata</span></code>, which is our AnnData object containing the single-cell data we want to visualize. The <code class="docutils literal notranslate"><span class="pre">obsm_key=&quot;X_nmf&quot;</span></code> argument specifies that we want to use the NMF representation of our data stored in the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">adata</span></code>.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">annotation_key=&quot;factor_annotation&quot;</span></code> argument tells the function to use the annotations related to the factors we want to plot. Essentially, this code generates a strip plot that visualizes how different factors (or clusters) are distributed based on the NMF representation of our data. It’s a handy way to see the relationships and distributions in our single-cell dataset!</p>
+<p>In this part of the script, we use the <code class="docutils literal notranslate"><span class="pre">sl.pl.factor_stripplot</span></code> function from the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package to visualize the results of our NMF (Non-negative Matrix Factorization) analysis. Specifically, we’re plotting the NMF components stored in <code class="docutils literal notranslate"><span class="pre">X_nmf</span></code> against the annotations generated by the <code class="docutils literal notranslate"><span class="pre">factor_annotation</span></code> step. This helps us see how the different factors identified by NMF relate to the spatial distribution of the data in our mouse brain dataset. The strip plot gives us a clear view of
+the expression patterns across the different factors, making it easier to interpret the biological significance of our NMF results. Essentially, we’re visualizing the relationship between the latent factors and the spatial context of the cells in our dataset.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
@@ -775,16 +750,11 @@ AnnData object with n_obs × n_vars = 2448 × 2000
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_nmf_35_0.png" src="../_images/notebooks_nmf_35_0.png" />
+<img alt="../_images/notebooks_nmf_40_0.png" src="../_images/notebooks_nmf_40_0.png" />
 </div>
 </div>
-<p>To undertand how the NMF factors are spatially distributed, we are using the <code class="docutils literal notranslate"><span class="pre">factor_embedding</span></code> function from the <code class="docutils literal notranslate"><span class="pre">sl.pl</span></code> module.</p>
-<p>Here’s the breakdown:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">obsm_key=&quot;X_nmf&quot;</span></code> tells the function to use the NMF embeddings stored in the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">adata</span></code> under the key “X_nmf”.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">basis='spatial'</span></code> indicates that we want to visualize the data in a spatial context.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">annotation_key=&quot;factor_annotation&quot;</span></code> specifies the key for the annotations we want to use for coloring or labeling the points in the plot.</p></li>
-</ul>
+<p>In this part of the script, we use the <code class="docutils literal notranslate"><span class="pre">sl.pl.factor_embedding</span></code> function to visualize the NMF (Non-negative Matrix Factorization) results in a spatial context. We pass our <code class="docutils literal notranslate"><span class="pre">adata</span></code> object, which contains the NMF results stored in <code class="docutils literal notranslate"><span class="pre">obsm_key=&quot;X_nmf&quot;</span></code>, and specify that we want to visualize it based on the spatial coordinates of the data. The <code class="docutils literal notranslate"><span class="pre">annotation_key=&quot;factor_annotation&quot;</span></code> tells the function to use the annotations generated by the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package to color the plot. This helps us see
+how the different NMF factors are distributed across the spatial tissue sections of the mouse brain. Finally, <code class="docutils literal notranslate"><span class="pre">plt.tight_layout()</span></code> ensures that the plot elements are nicely arranged without overlapping.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
@@ -803,7 +773,7 @@ AnnData object with n_obs × n_vars = 2448 × 2000
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_nmf_37_0.png" src="../_images/notebooks_nmf_37_0.png" />
+<img alt="../_images/notebooks_nmf_42_0.png" src="../_images/notebooks_nmf_42_0.png" />
 </div>
 </div>
 </section>
@@ -821,20 +791,20 @@ AnnData object with n_obs × n_vars = 2448 × 2000
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="factor_analysis.html"
+       href="../index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Factor analysis</p>
+        <p class="prev-next-title">Welcome to scllm’s documentation!</p>
       </div>
     </a>
     <a class="right-next"
-       href="../api.html"
+       href="angelidis.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API Reference</p>
+        <p class="prev-next-title">Analysing lung cells from aging mice with scllm</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -855,6 +825,9 @@ AnnData object with n_obs × n_vars = 2448 × 2000
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Data-preprocessing">Data preprocessing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Applying-NMF">Applying NMF</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotating-factors">Annotating factors</a></li>
 </ul>
   </nav></div>
 

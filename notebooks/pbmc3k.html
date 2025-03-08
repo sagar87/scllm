@@ -1,0 +1,841 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Annotating the PMBC3K dataset using PCA and scllm &#8212; scllm 0.1.5 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/pbmc3k';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">scllm 0.1.5 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="nmf.html">Identifying gene signatures in Visium data using NMF and scllm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="angelidis.html">Analysing lung cells from aging mice with scllm</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../_autosummary/scllm.tl.html">scllm.tl</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/sagar87/scllm" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/sagar87/scllm/edit/main/docs/notebooks/pbmc3k.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/sagar87/scllm/issues/new?title=Issue%20on%20page%20%2Fnotebooks/pbmc3k.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/pbmc3k.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Annotating the PMBC3K dataset using PCA and scllm</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Setup">Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotating-PCA-factors">Annotating PCA factors</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotating-factors-with-other-terms">Annotating factors with other terms</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Annotating-the-PMBC3K-dataset-using-PCA-and-scllm">
+<h1>Annotating the PMBC3K dataset using PCA and scllm<a class="headerlink" href="#Annotating-the-PMBC3K-dataset-using-PCA-and-scllm" title="Permalink to this heading">#</a></h1>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Permalink to this heading">#</a></h2>
+<p>In this code, we analyze single-cell RNA sequencing data from the PBMC dataset using various computational techniques. We first perform PCA to reduce dimensionality and then use a language model to annotate the principal components with relevant biological factors and genetic pathways. We visualize these annotations through strip plots and embeddings. Next, we apply the Leiden clustering algorithm to identify distinct cell populations and annotate these clusters using the language model again.
+Finally, we visualize the clusters on a UMAP plot and generate a heatmap to display the expression of key genes across the annotated clusters. This workflow integrates data processing, machine learning, and visualization to enhance our understanding of cellular heterogeneity.</p>
+<p>First, we load our environment variables using <code class="docutils literal notranslate"><span class="pre">load_dotenv()</span></code>, which allows us to access sensitive information like our OpenAI API key without hardcoding it. Then, we import necessary libraries: <code class="docutils literal notranslate"><span class="pre">scllm</span></code> for data annotation, <code class="docutils literal notranslate"><span class="pre">scanpy</span></code> for single-cell analysis, <code class="docutils literal notranslate"><span class="pre">pandas</span></code> for data manipulation, and <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code> for plotting.</p>
+<p>Next, we set up the OpenAI model with <code class="docutils literal notranslate"><span class="pre">ChatOpenAI</span></code>, specifying the model type and temperature for response variability. This model will help us annotate our PBMC dataset later in the script. The rest of the code focuses on processing the PBMC data, performing PCA, and generating visualizations, but these initial lines are crucial for setting up our environment and tools for the analysis.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enter your API key for ChatGPT</span>
+<span class="c1"># import os</span>
+<span class="c1"># os.environ[&quot;OPENAI_API_KEY&quot;] = &quot;Enter your API key here.&quot;</span>
+<span class="c1"># Or alternatively save your OPENAI key in a .env file and load it via dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="n">load_dotenv</span><span class="p">()</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scllm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scanpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">langchain_openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatOpenAI</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Setup">
+<h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this heading">#</a></h2>
+<p>In this section, we set up the language model that will help us annotate our PBMC dataset. We specify the model we want to use, <code class="docutils literal notranslate"><span class="pre">gpt-4o-mini</span></code>, and create an instance of <code class="docutils literal notranslate"><span class="pre">ChatOpenAI</span></code> with a temperature of 0.0, which means we want deterministic outputs. This is crucial for consistent annotations. By using this model, we can leverage its capabilities to interpret and annotate our data based on the PCA results and other analyses we perform later in the script. This setup is essential for the
+subsequent steps where we call <code class="docutils literal notranslate"><span class="pre">sl.tl.annotate_factor</span></code> and <code class="docutils literal notranslate"><span class="pre">sl.tl.annotate_cluster</span></code>, allowing us to enrich our dataset with meaningful biological insights.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">openai_model</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o-mini&quot;</span>
+<span class="n">llm</span> <span class="o">=</span> <span class="n">ChatOpenAI</span><span class="p">(</span><span class="n">temperature</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">openai_model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In these lines, we load the PBMC dataset using <code class="docutils literal notranslate"><span class="pre">sc.datasets.pbmc3k_processed()</span></code>, which gives us a pre-processed single-cell RNA-seq dataset of peripheral blood mononuclear cells. Then, we perform Principal Component Analysis (PCA) on this dataset with <code class="docutils literal notranslate"><span class="pre">sc.pp.pca(pbmc,</span> <span class="pre">n_comps=20)</span></code>, reducing the dimensionality to 20 principal components. This step is crucial because it helps us capture the most important variations in the data, making it easier to visualize and analyze later on. Essentially,
+we’re setting the stage for the subsequent annotation and visualization tasks in the script.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">pbmc3k_processed</span><span class="p">()</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">n_comps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Annotating-PCA-factors">
+<h2>Annotating PCA factors<a class="headerlink" href="#Annotating-PCA-factors" title="Permalink to this heading">#</a></h2>
+<p>In this section, we use the <code class="docutils literal notranslate"><span class="pre">annotate_factor</span></code> function from the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package to annotate our PCA factors. This function grabs the genes with the largest absolute weights from our PCA results and queries a large language model (LLM) to predict the most likely cell type associated with those genes. Since LLMs provide probabilistic outputs, we sample the results <code class="docutils literal notranslate"><span class="pre">num_samples</span></code> times and select the most frequent answer as our final annotation.</p>
+<p>By setting <code class="docutils literal notranslate"><span class="pre">top_genes=40</span></code>, we focus on the top 40 genes contributing to each PCA factor, and we store the results in <code class="docutils literal notranslate"><span class="pre">pca_annotation</span></code>. This helps us understand the biological significance of the PCA dimensions in our PBMC dataset, making it easier to interpret the underlying cellular heterogeneity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span>
+    <span class="n">pbmc</span><span class="p">,</span>
+    <span class="n">varm_key</span><span class="o">=</span><span class="s1">&#39;PCs&#39;</span><span class="p">,</span>
+    <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
+    <span class="n">top_genes</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;pca_annotation&#39;</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">5</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In the line <code class="docutils literal notranslate"><span class="pre">pbmc.uns['pca_annotation']['mapping']</span></code>, we access the results of our PCA annotation, which stores the mapping of PCA components to their corresponding biological factors. Earlier in the script, we used <code class="docutils literal notranslate"><span class="pre">sl.tl.annotate_factor</span></code> to annotate the PCA results based on the top genes, and this line lets us see that mapping. We also create visualizations with <code class="docutils literal notranslate"><span class="pre">sl.pl.factor_stripplot</span></code> and <code class="docutils literal notranslate"><span class="pre">sl.pl.factor_embedding</span></code> to explore how these annotations relate to the PCA components. Later, we
+annotate clusters identified by the Leiden algorithm with <code class="docutils literal notranslate"><span class="pre">sl.tl.annotate_cluster</span></code>, which helps us understand the biological significance of those clusters. Finally, we visualize the cluster annotations alongside the original clustering to see how well they align.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pbmc</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;pca_annotation&#39;</span><span class="p">][</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;0+&#39;: &#39;Monocyte/Macrophage&#39;,
+ &#39;0-&#39;: &#39;Cytotoxic T cell&#39;,
+ &#39;1+&#39;: &#39;Cytotoxic T cell&#39;,
+ &#39;1-&#39;: &#39;B cell&#39;,
+ &#39;10+&#39;: &#39;Natural Killer Cell&#39;,
+ &#39;10-&#39;: &#39;Natural Killer Cell&#39;,
+ &#39;11+&#39;: &#39;Macrophage&#39;,
+ &#39;11-&#39;: &#39;Dendritic Cell&#39;,
+ &#39;12+&#39;: &#39;Plasma Cell&#39;,
+ &#39;12-&#39;: &#39;Photoreceptor&#39;,
+ &#39;13+&#39;: &#39;B cell&#39;,
+ &#39;13-&#39;: &#39;T follicular helper cell&#39;,
+ &#39;14+&#39;: &#39;B cells&#39;,
+ &#39;14-&#39;: &#39;Natural Killer Cell&#39;,
+ &#39;15+&#39;: &#39;Natural Killer (NK) Cell&#39;,
+ &#39;15-&#39;: &#39;Cardiomyocyte&#39;,
+ &#39;16+&#39;: &#39;B cell&#39;,
+ &#39;16-&#39;: &#39;B cell&#39;,
+ &#39;17+&#39;: &#39;B cell&#39;,
+ &#39;17-&#39;: &#39;T cell&#39;,
+ &#39;18+&#39;: &#39;B cell&#39;,
+ &#39;18-&#39;: &#39;B cell&#39;,
+ &#39;19+&#39;: &#39;Endothelial Cell&#39;,
+ &#39;19-&#39;: &#39;Natural Killer Cell&#39;,
+ &#39;2+&#39;: &#39;Platelet&#39;,
+ &#39;2-&#39;: &#39;B cell&#39;,
+ &#39;3+&#39;: &#39;B cell&#39;,
+ &#39;3-&#39;: &#39;T cell&#39;,
+ &#39;4+&#39;: &#39;Monocyte/Macrophage&#39;,
+ &#39;4-&#39;: &#39;Dendritic Cell&#39;,
+ &#39;5+&#39;: &#39;Cytotoxic T cell&#39;,
+ &#39;5-&#39;: &#39;Natural Killer Cell&#39;,
+ &#39;6+&#39;: &#39;Natural Killer (NK) Cell&#39;,
+ &#39;6-&#39;: &#39;T helper 1 (Th1) cell&#39;,
+ &#39;7+&#39;: &#39;Dendritic Cell&#39;,
+ &#39;7-&#39;: &#39;Natural Killer (NK) Cell&#39;,
+ &#39;8+&#39;: &#39;Dendritic Cell&#39;,
+ &#39;8-&#39;: &#39;Activated T cell&#39;,
+ &#39;9+&#39;: &#39;Interferon-stimulated macrophages&#39;,
+ &#39;9-&#39;: &#39;Macrophage&#39;}
+</pre></div></div>
+</div>
+<p>In this part of the script, we create a strip plot to visualize the PCA annotations of our PBMC dataset. The <code class="docutils literal notranslate"><span class="pre">plt.figure(figsize=(6,</span> <span class="pre">12))</span></code> line sets up a figure with a specific size for our plot. Then, we use <code class="docutils literal notranslate"><span class="pre">ax</span> <span class="pre">=</span> <span class="pre">plt.gca()</span></code> to get the current axes, which allows us to customize our plot further.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sl.pl.factor_stripplot</span></code> function is where the magic happens. We pass in our PBMC data, specify that we want to use the PCA coordinates (<code class="docutils literal notranslate"><span class="pre">obsm_key='X_pca'</span></code>), and indicate that we want to visualize the PCA annotations (<code class="docutils literal notranslate"><span class="pre">annotation_key='pca_annotation'</span></code>). The <code class="docutils literal notranslate"><span class="pre">size</span></code> and <code class="docutils literal notranslate"><span class="pre">jitter</span></code> parameters help adjust the appearance of the points in the plot, making it easier to see overlapping data. Finally, we set the x-axis limits with <code class="docutils literal notranslate"><span class="pre">ax.set_xlim([-20,</span> <span class="pre">30])</span></code> to focus on the relevant range of
+our PCA results.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_stripplot</span><span class="p">(</span>
+    <span class="n">pbmc</span><span class="p">,</span>
+    <span class="n">obsm_key</span><span class="o">=</span><span class="s1">&#39;X_pca&#39;</span><span class="p">,</span>
+    <span class="n">annotation_key</span><span class="o">=</span><span class="s1">&#39;pca_annotation&#39;</span><span class="p">,</span>
+    <span class="n">size</span><span class="o">=</span><span class="mf">.4</span><span class="p">,</span>
+    <span class="n">jitter</span><span class="o">=</span><span class="mf">.25</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(-20.0, 30.0)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pbmc3k_13_1.png" src="../_images/notebooks_pbmc3k_13_1.png" />
+</div>
+</div>
+<p>In this part of the script, we project the PCA factor values onto a UMAP representation. This is useful because UMAP helps visualize high-dimensional data in a lower-dimensional space, making it easier to identify clusters and patterns.</p>
+<p>The line <code class="docutils literal notranslate"><span class="pre">_</span> <span class="pre">=</span> <span class="pre">sl.pl.factor_embedding(...)</span></code> takes the PCA factors (like ‘0’, ‘1’, ‘2’, etc.) and maps them onto the UMAP coordinates stored in <code class="docutils literal notranslate"><span class="pre">X_umap</span></code>. We specify the <code class="docutils literal notranslate"><span class="pre">annotation_key</span></code> as ‘pca_annotation’ to label the points based on the PCA annotations we generated earlier. The <code class="docutils literal notranslate"><span class="pre">ncols=2</span></code> argument organizes the output into two columns for better visualization.</p>
+<p>By doing this, we can see how the PCA factors relate to the overall structure of the data, helping us understand the underlying biological significance of the clusters.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_embedding</span><span class="p">(</span>
+    <span class="n">pbmc</span><span class="p">,</span>
+    <span class="n">factors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">],</span>
+    <span class="n">obsm_key</span><span class="o">=</span><span class="s1">&#39;X_pca&#39;</span><span class="p">,</span>
+    <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;X_umap&#39;</span><span class="p">,</span>
+    <span class="n">annotation_key</span><span class="o">=</span><span class="s1">&#39;pca_annotation&#39;</span><span class="p">,</span>
+    <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pbmc3k_15_0.png" src="../_images/notebooks_pbmc3k_15_0.png" />
+</div>
+</div>
+<section id="Annotating-factors-with-other-terms">
+<h3>Annotating factors with other terms<a class="headerlink" href="#Annotating-factors-with-other-terms" title="Permalink to this heading">#</a></h3>
+<p>In this part of the script, we use the <code class="docutils literal notranslate"><span class="pre">sl.tl.annotate_factor</span></code> function to annotate our PCA results with a different focus—specifically, genetic pathways. By setting the <code class="docutils literal notranslate"><span class="pre">term</span></code> argument to ‘genetic pathway’, we can modify the predictions to reflect this new context.</p>
+<p>We specify <code class="docutils literal notranslate"><span class="pre">top_genes=30</span></code> to limit the annotation to the top 30 genes contributing to the PCA components. The <code class="docutils literal notranslate"><span class="pre">key_added='gene_pathway'</span></code> argument tells the function to store the results under this new key in the <code class="docutils literal notranslate"><span class="pre">pbmc</span></code> object. This allows us to easily access and visualize the genetic pathway annotations later on. Overall, this step enhances our understanding of the biological significance behind the PCA factors.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_factor</span><span class="p">(</span>
+    <span class="n">pbmc</span><span class="p">,</span>
+    <span class="n">varm_key</span><span class="o">=</span><span class="s1">&#39;PCs&#39;</span><span class="p">,</span>
+    <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
+    <span class="n">top_genes</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">key_added</span><span class="o">=</span><span class="s1">&#39;gene_pathway&#39;</span><span class="p">,</span>
+    <span class="n">term</span><span class="o">=</span><span class="s1">&#39;genetic pathway&#39;</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">5</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In this part of the script, we create a strip plot to visualize the annotations related to genetic pathways from our PBMC dataset. First, we set up the figure size and get the current axes with <code class="docutils literal notranslate"><span class="pre">plt.gca()</span></code>. Then, we call <code class="docutils literal notranslate"><span class="pre">sl.pl.factor_stripplot()</span></code> to plot the PCA coordinates (<code class="docutils literal notranslate"><span class="pre">obsm_key='X_pca'</span></code>) against the <code class="docutils literal notranslate"><span class="pre">gene_pathway</span></code> annotations. We adjust the size of the points and add some jitter for better visibility. Finally, we set the x-axis limits to focus on the relevant range of PCA values.
+This helps us see how different genetic pathways are distributed across the PCA space, giving insights into the underlying biology of our data.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">sl</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">factor_stripplot</span><span class="p">(</span>
+    <span class="n">pbmc</span><span class="p">,</span>
+    <span class="n">obsm_key</span><span class="o">=</span><span class="s1">&#39;X_pca&#39;</span><span class="p">,</span>
+    <span class="n">annotation_key</span><span class="o">=</span><span class="s1">&#39;gene_pathway&#39;</span><span class="p">,</span>
+    <span class="n">size</span><span class="o">=</span><span class="mf">.4</span><span class="p">,</span>
+    <span class="n">jitter</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(-20.0, 30.0)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pbmc3k_19_1.png" src="../_images/notebooks_pbmc3k_19_1.png" />
+</div>
+</div>
+<p>In this part of the script, we’re using the Leiden algorithm to cluster our PBMC dataset. The line <code class="docutils literal notranslate"><span class="pre">sc.tl.leiden(pbmc,</span> <span class="pre">flavor=&quot;igraph&quot;,</span> <span class="pre">n_iterations=2)</span></code> tells Scanpy to apply the Leiden clustering method, which is great for identifying clusters in single-cell data. The <code class="docutils literal notranslate"><span class="pre">flavor=&quot;igraph&quot;</span></code> option specifies that we want to use the igraph library for the clustering process, which is efficient and robust. The <code class="docutils literal notranslate"><span class="pre">n_iterations=2</span></code> parameter indicates that the algorithm will run for two iterations to
+refine the clusters. This step is crucial because it helps us group similar cells together based on their gene expression profiles, setting the stage for further analysis and annotation of these clusters.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">leiden</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;igraph&quot;</span><span class="p">,</span> <span class="n">n_iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In this part of the script, we use <code class="docutils literal notranslate"><span class="pre">sc.pl.umap(pbmc,</span> <span class="pre">color='leiden')</span></code> to visualize the UMAP (Uniform Manifold Approximation and Projection) representation of our PBMC dataset, coloring the points based on the ‘leiden’ clustering results. This helps us see how the cells group together based on their similarities after we’ve performed clustering. The ‘leiden’ key contains the cluster assignments for each cell, which we generated earlier in the script. By plotting this, we can quickly assess the
+effectiveness of our clustering and identify distinct cell populations in the dataset. It’s a crucial step for understanding the structure of our data visually.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;leiden&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pbmc3k_23_0.png" src="../_images/notebooks_pbmc3k_23_0.png" />
+</div>
+</div>
+<p>In this part of the script, we’re using the <code class="docutils literal notranslate"><span class="pre">annotate_cluster</span></code> function from the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package to add meaningful annotations to the clusters identified in our PBMC dataset. We specify <code class="docutils literal notranslate"><span class="pre">cluster_key='leiden'</span></code>, which tells the function to use the Leiden clustering results we generated earlier. The <code class="docutils literal notranslate"><span class="pre">llm=llm</span></code> argument passes our language model for generating annotations. By setting <code class="docutils literal notranslate"><span class="pre">use_raw=True</span></code>, we ensure that the raw counts are used for annotation, which can provide more accurate
+insights. We also specify <code class="docutils literal notranslate"><span class="pre">top_genes=50</span></code> to focus on the most significant genes in each cluster, and <code class="docutils literal notranslate"><span class="pre">num_samples=5</span></code> to generate a few different annotation samples for each cluster. This helps us understand the biological significance of the clusters we identified.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sl</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">annotate_cluster</span><span class="p">(</span>
+    <span class="n">pbmc</span><span class="p">,</span>
+    <span class="n">cluster_key</span><span class="o">=</span><span class="s1">&#39;leiden&#39;</span><span class="p">,</span>
+    <span class="n">llm</span><span class="o">=</span><span class="n">llm</span><span class="p">,</span>
+    <span class="n">use_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">top_genes</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">num_samples</span><span class="o">=</span><span class="mi">5</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/harald/Documents/opt/scllm/src/scllm/tl/cluster_annotation.py:40: FutureWarning: the convert_dtype parameter is deprecated and will be removed in a future version.  Do ``ser.astype(object).apply()`` instead if you want ``convert_dtype=False``.
+  flattened=lambda df: df[&#34;union&#34;].apply(
+</pre></div></div>
+</div>
+<p>In this part of the script, we’re visualizing the results of our clustering analysis on the PBMC dataset. The <code class="docutils literal notranslate"><span class="pre">sc.pl.umap</span></code> function generates a UMAP plot, which is a great way to visualize high-dimensional data in two dimensions. We’re coloring the points based on two different annotations: <code class="docutils literal notranslate"><span class="pre">cluster_annotation</span></code> and <code class="docutils literal notranslate"><span class="pre">louvain</span></code>. This helps us see how our clusters (from the Leiden algorithm we ran earlier) relate to the Louvain clustering method. By setting <code class="docutils literal notranslate"><span class="pre">ncols=1</span></code>, we ensure that both
+annotations are displayed in a single column, making it easier to compare the two clustering results side by side. This visualization gives us insights into the structure of our data and how well our annotations align with the clusters.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">pbmc</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cluster_annotation&#39;</span><span class="p">,</span> <span class="s1">&#39;louvain&#39;</span><span class="p">],</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pbmc3k_27_0.png" src="../_images/notebooks_pbmc3k_27_0.png" />
+</div>
+</div>
+<p>In this part of the script, we use the <code class="docutils literal notranslate"><span class="pre">sc.pl.heatmap</span></code> function to visualize the expression of genes that are relevant to the clusters we’ve annotated. Specifically, <code class="docutils literal notranslate"><span class="pre">pbmc.uns['cluster_annotation']['var_names']</span></code> retrieves the gene names that the <code class="docutils literal notranslate"><span class="pre">annotate_cluster</span></code> function identified as significant for each cluster. This helps us see which genes are driving the characteristics of the different clusters we found using the Leiden algorithm. By grouping the heatmap by <code class="docutils literal notranslate"><span class="pre">cluster_annotation</span></code>,
+we can easily compare gene expression patterns across clusters, giving us insights into their biological significance. This visualization is crucial for understanding the underlying biology of our PBMC dataset.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span>
+    <span class="n">pbmc</span><span class="p">,</span>
+    <span class="n">var_names</span><span class="o">=</span><span class="n">pbmc</span><span class="o">.</span><span class="n">uns</span><span class="p">[</span><span class="s1">&#39;cluster_annotation&#39;</span><span class="p">][</span><span class="s1">&#39;var_names&#39;</span><span class="p">],</span>
+    <span class="n">groupby</span><span class="o">=</span><span class="s1">&#39;cluster_annotation&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+WARNING: Gene labels are not shown when more than 50 genes are visualized. To show gene labels set `show_gene_labels=True`
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_pbmc3k_29_1.png" src="../_images/notebooks_pbmc3k_29_1.png" />
+</div>
+</div>
+<p>We start by loading the PBMC dataset and performing PCA to reduce dimensionality. Then, we use the <code class="docutils literal notranslate"><span class="pre">scllm</span></code> package to annotate the PCA results with the <code class="docutils literal notranslate"><span class="pre">annotate_factor</span></code> function, which leverages a language model to identify the top genes associated with each principal component. We visualize these annotations with a strip plot. Next, we annotate the dataset with genetic pathways, again using the same function, and plot the results. After that, we apply the Leiden clustering algorithm to
+identify cell clusters and visualize them on a UMAP plot. Finally, we annotate these clusters and create a heatmap to show the expression of the top genes in each cluster, providing insights into the cellular composition of the PBMC dataset.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Setup">Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotating-PCA-factors">Annotating PCA factors</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Annotating-factors-with-other-terms">Annotating factors with other terms</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harald Vohringer
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, Harald Vohringer.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
