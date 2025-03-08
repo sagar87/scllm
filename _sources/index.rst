@@ -10,7 +10,7 @@ Welcome to scllm's documentation!
    :hidden:
    :caption: Tutorials:
 
-   notebooks/pmbc3k
+   notebooks/pbmc3k
    notebooks/nmf
    notebooks/angelidis
 
