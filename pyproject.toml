@@ -64,4 +64,5 @@ dev = [
 ]
 docs = [
     "igraph>=0.11.8",
+    "leidenalg>=0.10.2",
 ]
