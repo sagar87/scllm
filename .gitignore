@@ -9,3 +9,5 @@ docs/notebooks/data
 .env
 scratch.ipynb
 tools
+raw
+scratch
