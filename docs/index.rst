@@ -10,10 +10,9 @@ Welcome to scllm's documentation!
    :hidden:
    :caption: Tutorials:
 
-   notebooks/cell_types
-   notebooks/factor_analysis
-   notebooks/nmf
    notebooks/pmbc3k
+   notebooks/nmf
+   notebooks/angelidis
 
 
 .. toctree::
