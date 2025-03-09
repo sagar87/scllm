@@ -1398,6 +1398,22 @@ wheels = [
 ]
 
 [[package]]
+name = "joypy"
+version = "0.2.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy", version = "1.26.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "pandas" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/89/f4/49636d4c5fa30822028a1e2af234cecf488ba3c7e9ff5aba88e36fb0c95c/joypy-0.2.6.tar.gz", hash = "sha256:099da2d6c7d81b5eccc957bd9446831f565ba42d5abbab0fa92b81892449522e", size = 10270 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e9/8c/4d32c8935431eb10fd140faa4b13b6b8de222223a88fa9ad2a7711b7f1a9/joypy-0.2.6-py2.py3-none-any.whl", hash = "sha256:fffe882e8281e56e08b374a3148436cb448562ba39e4d566204c7e8ee2caddab", size = 8584 },
+]
+
+[[package]]
 name = "json5"
 version = "0.10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3729,6 +3745,7 @@ dependencies = [
     { name = "docarray" },
     { name = "fastapi" },
     { name = "google-search-results" },
+    { name = "joypy" },
     { name = "langchain" },
     { name = "langchain-community" },
     { name = "langchain-core" },
@@ -3759,6 +3776,7 @@ requires-dist = [
     { name = "docarray", specifier = ">=0.40.0" },
     { name = "fastapi", specifier = ">=0.115.8" },
     { name = "google-search-results", specifier = ">=2.4.2" },
+    { name = "joypy", specifier = ">=0.2.6" },
     { name = "langchain", specifier = ">=0.3.7" },
     { name = "langchain-community", specifier = ">=0.3.5" },
     { name = "langchain-core", specifier = ">=0.3.15" },
