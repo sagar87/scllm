@@ -7,3 +7,4 @@ API Reference
    :recursive:
 
    scllm.tl
+   scllm.pl
