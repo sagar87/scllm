@@ -13,6 +13,7 @@ Welcome to scllm's documentation!
    notebooks/pbmc3k
    notebooks/nmf
    notebooks/angelidis
+   notebooks/xenium
 
 
 .. toctree::
