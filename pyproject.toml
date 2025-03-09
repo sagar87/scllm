@@ -63,3 +63,7 @@ dev = [
     "sphinx-book-theme>=1.1.4",
     "nbsphinx>=0.9.3",
 ]
+docs = [
+    "igraph>=0.11.8",
+    "leidenalg>=0.10.2",
+]
