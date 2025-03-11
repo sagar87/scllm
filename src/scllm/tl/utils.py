@@ -1,4 +1,44 @@
 import pandas as pd
+import scanpy as sc
+
+
+def _prepare_cluster_data(
+    adata: sc.AnnData,
+    cluster_key: str,
+    top_items: int = 10,
+    num_samples: int = 1,
+    **kwargs,
+):
+    sc.tl.rank_genes_groups(
+        adata,
+        groupby=cluster_key,
+        key_added=f"{cluster_key}_rank_genes_groups",
+        **kwargs,
+    )
+
+    genes = sc.get.rank_genes_groups_df(
+        adata,
+        group=adata.obs[cluster_key].unique(),
+        key=f"{cluster_key}_rank_genes_groups",
+    )
+
+    data = pd.concat(
+        [
+            (
+                genes.groupby("group", observed=True)
+                .head(top_items)
+                .groupby("group", observed=True)
+                .agg({"names": list})
+                .reset_index()
+                .loc[:, ["group", "names"]]
+                .rename(columns={"names": "data"})
+                .assign(init=i)
+            )
+            for i in range(num_samples)
+        ]
+    ).to_dict("records")
+
+    return data
 
 
 def _prepare_mapping(df: pd.DataFrame, identity: str, target: str):
