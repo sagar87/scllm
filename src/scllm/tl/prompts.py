@@ -5,6 +5,23 @@ from langchain.prompts import (
 )
 
 
+def _term_prompt(preface, prologue, epilogue, format: bool = True):
+    human = f"{prologue}\n\n{{data}}"
+
+    if epilogue is not None:
+        human += f"\n\n{epilogue}"
+
+    if format:
+        human += "\n\n{format_instructions}"
+    # print(human)
+    return ChatPromptTemplate.from_messages(
+        [
+            SystemMessagePromptTemplate.from_template(preface),
+            HumanMessagePromptTemplate.from_template(human),
+        ]
+    )
+
+
 def construct_term_prompt(
     term: str = "cell type",
     extra: str = "",
