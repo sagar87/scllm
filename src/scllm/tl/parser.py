@@ -1,13 +1,19 @@
 from langchain.output_parsers import PydanticOutputParser
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, create_model
 
-# def construct_term_parser(term: str):
-#     description = f"Extract the most likely {term}."
 
-#     class Term(BaseModel):
-#         term: str = Field(description=description)
+def _term_parser(term: str, features: str):
 
-#     return PydanticOutputParser(pydantic_object=Term)
+    model = create_model(
+        "TermParser",
+        term=(str, Field(description=f"Extract the most likely {term}.")),
+        features=(
+            list,
+            Field(description=f"Extract the {features} associated with {term}."),
+        ),
+    )
+
+    return PydanticOutputParser(pydantic_object=model)
 
 
 def construct_term_parser(term: str):
