@@ -88,3 +88,27 @@ def construct_term_chain_with_genes(llm, term: str, extra: str = ""):
         | RunnableLambda(flatten)
         | RunnableLambda(prune)
     )
+
+
+def _term_chain(llm, prompt, parser):
+    """
+    Extracts information from the data field and processes
+    """
+    return RunnableEach(
+        bound=RunnableParallel(
+            {
+                "pass": RunnablePassthrough(),
+                "target": RunnableLambda(
+                    lambda x: prompt.format_prompt(
+                        data=x["data"],
+                        format_instructions=parser.get_format_instructions(),
+                    )
+                )
+                | llm
+                | parser
+                | RunnableLambda(lambda x: x.model_dump()),
+            }
+        )
+        | RunnableLambda(flatten)
+        | RunnableLambda(prune)
+    )
