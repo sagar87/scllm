@@ -16,6 +16,22 @@ def _term_parser(term: str, features: str):
     return PydanticOutputParser(pydantic_object=model)
 
 
+def _multiple_term_parser(term, features, num_terms):
+    new_model = create_model(
+        "DynamicModel",
+        term=(
+            list[str],
+            Field(description=f"Extract the {num_terms} most likely {term}."),
+        ),
+        features=(
+            list[list[str]],
+            Field(description=f"Extract the {features} associated with each {term}."),
+        ),
+    )
+
+    return PydanticOutputParser(pydantic_object=new_model)
+
+
 def construct_term_parser(term: str):
     term_description = f"Extract the most likely {term}."
     genes_description = (
