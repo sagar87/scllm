@@ -112,3 +112,25 @@ def _term_chain(llm, prompt, parser):
         | RunnableLambda(flatten)
         | RunnableLambda(prune)
     )
+
+
+def _description_chain(llm, prompt, parser):
+    """
+    Extracts information from the data field and processes
+    """
+    return RunnableEach(
+        bound=RunnableParallel(
+            {
+                "pass": RunnablePassthrough(),
+                "target": RunnableLambda(
+                    lambda x: prompt.format_prompt(
+                        data=x["data"],
+                    )
+                )
+                | llm
+                | parser,
+            }
+        )
+        | RunnableLambda(flatten)
+        | RunnableLambda(prune)
+    )
