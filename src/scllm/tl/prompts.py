@@ -22,6 +22,7 @@ def _term_prompt(preface, prologue, epilogue, format: bool = True):
     )
 
 
+# Legacy code
 def construct_term_prompt(
     term: str = "cell type",
     extra: str = "",

@@ -32,6 +32,7 @@ def _multiple_term_parser(term, features, num_terms):
     return PydanticOutputParser(pydantic_object=new_model)
 
 
+# Legacy code
 def construct_term_parser(term: str):
     term_description = f"Extract the most likely {term}."
     genes_description = (

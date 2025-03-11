@@ -4,6 +4,9 @@ from .model import (
     ClusterAnnotation,
     ClusterAnnotationDescription,
     ClusterAnnotationTerms,
+    FactorAnnotation,
+    FactorAnnotationTerms,
+    FactorDescription,
 )
 
 __all__ = [
@@ -12,4 +15,7 @@ __all__ = [
     "ClusterAnnotation",
     "ClusterAnnotationTerms",
     "ClusterAnnotationDescription",
+    "FactorAnnotation",
+    "FactorAnnotationTerms",
+    "FactorDescription",
 ]
