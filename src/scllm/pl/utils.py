@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd  # type: ignore
 from anndata import AnnData  # type: ignore
 from matplotlib.axes import Axes  # type: ignore
-from matplotlib.cm import get_cmap  # type: ignore
 from matplotlib.colors import Colormap, Normalize
 from matplotlib.figure import Figure  # type: ignore
 from numpy.typing import NDArray
@@ -45,7 +44,7 @@ def _set_up_cmap(
 
     vmin = array.min()
     vmax = array.max()
-    cmap = get_cmap(colormap)
+    cmap = plt.get_cmap(colormap)
 
     if vmin < 0 and vmax > 0:
         norm = co.TwoSlopeNorm(vmin=vmin, vmax=vmax, vcenter=0)

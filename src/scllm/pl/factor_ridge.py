@@ -4,7 +4,7 @@ import pandas as pd
 import scanpy as sc
 from joypy import joyplot
 
-from ..tl.factor_annotation import _validate_factors
+from ..tl.validator import _validate_factors
 
 
 def factor_ridge(

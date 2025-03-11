@@ -3,7 +3,7 @@ from anndata import AnnData
 from matplotlib.axes import Axes
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from ..tl.factor_annotation import _validate_factors
+from ..tl.validator import _validate_factors
 from .utils import _set_up_cmap, _set_up_plot
 
 

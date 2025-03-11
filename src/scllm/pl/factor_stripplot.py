@@ -6,7 +6,7 @@ import pandas as pd
 import scanpy as sc
 import seaborn as sns
 
-from ..tl.factor_annotation import _validate_factors
+from ..tl.validator import _validate_factors
 
 
 def factor_stripplot(
