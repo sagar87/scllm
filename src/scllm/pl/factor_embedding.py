@@ -10,9 +10,9 @@ from .utils import _set_up_cmap, _set_up_plot
 def factor_embedding(
     adata: AnnData,
     obsm_key: str,
+    annotation_key: str,
     factors: list[str] | str = "all",
     basis: str = "X_umap",
-    annotation_key: str = "scllm_annotation",
     cmap: str = "RdBu",
     colorbar_pos: str = "right",
     colorbar_width: str = "3%",
