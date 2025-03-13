@@ -1,5 +1,6 @@
 from typing import Literal
 
+import numpy as np
 import pandas as pd
 import scanpy as sc
 
@@ -110,7 +111,8 @@ def _prepare_mapping(df: pd.DataFrame, identity: str, target: str):
         .loc[:, "idxmax"]
         .to_dict()
     )
-    return mapping
+
+    return {k: np.str_(v) for k, v in mapping.items()}
 
 
 def _prepare_var_names(df: pd.DataFrame, mapping: dict) -> dict:
