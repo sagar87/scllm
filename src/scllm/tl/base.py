@@ -50,10 +50,15 @@ class FactorMixin:
         self.sign = _validate_sign(self.sign)
         self.factors = _validate_factors(self.factors, num_factors)
 
+        # prepare the chain
         data = self._prepare(adata)
         chain = self._get_chain()
-        res = chain(llm).invoke(data)
-        return res
+        self.results_ = chain(llm).invoke(data)
+
+        if self.copy:
+            return self.results_
+
+        adata.uns[self.key_added] = self._postprocess()
 
 
 class ClusterMixin:
@@ -74,6 +79,14 @@ class ClusterMixin:
         data = self._prepare(adata)
         chain = self._get_chain()
         res = chain(llm).invoke(data)
+
+        # save results to anndata
+        # mapping = _prepare_mapping(df, "cluster", "term")
+        # var_names = _prepare_var_names(df, mapping)
+
+        # adata.obs[key_added] = adata.obs[cluster_key].astype(str).map(mapping)
+        # adata.uns[key_added] = {"raw": out, "mapping": mapping, "var_names": var_names}
+
         return res
 
 

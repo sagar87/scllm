@@ -1,5 +1,6 @@
 from typing import Literal
 
+import pandas as pd
 from langchain_core.output_parsers.string import StrOutputParser
 
 from .base import BaseModel, ClusterMixin, DescriptionMixin, FactorMixin, TermMixin
@@ -8,6 +9,7 @@ from .parser import (
     _term_parser,
 )
 from .prompts import _term_prompt
+from .utils import _prepare_mapping
 
 
 class ClusterAnnotation(BaseModel, ClusterMixin, TermMixin):
@@ -174,6 +176,13 @@ class FactorAnnotation(BaseModel, TermMixin, FactorMixin):
 
     def _get_parser(self):
         return _term_parser(self.term, self.feature)
+
+    def _postprocess(self):
+        df = pd.DataFrame(self.results_).assign(
+            id=lambda df: df.apply(lambda row: row.factor + row.sign, 1)
+        )
+        mapping = _prepare_mapping(df, "id", "term")
+        return {"raw": self.results_, "mapping": mapping}
 
 
 class FactorTerms(BaseModel, TermMixin, FactorMixin):
