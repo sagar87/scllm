@@ -11,6 +11,8 @@ from .parser import (
 from .prompts import _term_prompt
 from .utils import _prepare_mapping
 
+MAPPING = "mapping"
+
 
 class ClusterAnnotation(BaseModel, ClusterMixin, TermMixin):
     def __init__(
@@ -182,7 +184,7 @@ class FactorAnnotation(BaseModel, TermMixin, FactorMixin):
             id=lambda df: df.apply(lambda row: row.factor + row.sign, 1)
         )
         mapping = _prepare_mapping(df, "id", "term")
-        return {"raw": self.results_, "mapping": mapping}
+        return {MAPPING: mapping}
 
 
 class FactorTerms(BaseModel, TermMixin, FactorMixin):
