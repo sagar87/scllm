@@ -11,10 +11,7 @@ from .base import (
     TermMixin,
     TermsMixin,
 )
-from .parser import (
-    _multiple_term_parser,
-    _term_parser,
-)
+from .parser import _multiple_term_parser
 from .prompts import _term_prompt
 from .utils import _prepare_mapping, _prepare_var_names
 
@@ -52,9 +49,6 @@ class ClusterAnnotation(ClusterMixin, TermMixin, BaseModel):
         return _term_prompt(
             preface=self.preface, prologue=prologue, epilogue=self.epilogue, format=True
         )
-
-    def _get_parser(self):
-        return _term_parser(self.term, self.feature)
 
     def _postprocess(self, adata):
         df = pd.DataFrame(self.results_)
@@ -178,9 +172,6 @@ class FactorAnnotation(TermMixin, FactorMixin, BaseModel):
         return _term_prompt(
             preface=self.preface, prologue=prologue, epilogue=self.epilogue, format=True
         )
-
-    def _get_parser(self):
-        return _term_parser(self.term, self.feature)
 
     def _postprocess(self, adata):
         df = pd.DataFrame(self.results_).assign(
