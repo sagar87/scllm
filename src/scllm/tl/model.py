@@ -11,7 +11,6 @@ from .base import (
     TermMixin,
     TermsMixin,
 )
-from .parser import _multiple_term_parser
 from .prompts import _term_prompt
 from .utils import _prepare_mapping, _prepare_var_names
 
@@ -89,9 +88,6 @@ class ClusterTerms(ClusterMixin, TermsMixin, BaseModel):
         return _term_prompt(
             preface=self.preface, prologue=prologue, epilogue=self.epilogue, format=True
         )
-
-    def _get_parser(self):
-        return _multiple_term_parser(self.term, self.feature, self.num_terms)
 
     def _postprocess(self, adata):
         mapping = {item["group"]: item["term"] for item in self.results_}
@@ -218,9 +214,6 @@ class FactorTerms(TermsMixin, FactorMixin, BaseModel):
         return _term_prompt(
             preface=self.preface, prologue=prologue, epilogue=self.epilogue, format=True
         )
-
-    def _get_parser(self):
-        return _multiple_term_parser(self.term, self.feature, self.num_terms)
 
 
 class FactorDescription(FactorMixin, DescriptionMixin, BaseModel):
