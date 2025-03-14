@@ -4,9 +4,7 @@ import pytest
 import scanpy as sc
 from langchain_community.llms.fake import FakeListLLM
 
-from scllm.tl.factor_annotation import (
-    annotate_factor,
-)
+from scllm.tl import annotate_factor
 
 
 @pytest.fixture

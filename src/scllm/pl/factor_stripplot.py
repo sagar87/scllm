@@ -6,7 +6,7 @@ import pandas as pd
 import scanpy as sc
 import seaborn as sns
 
-from ..tl.factor_annotation import _validate_factors
+from ..tl.validator import _validate_factors
 
 
 def factor_stripplot(
@@ -34,7 +34,7 @@ def factor_stripplot(
         .melt(var_name="Factor", value_name="Weight")
     )
 
-    sns.stripplot(data=data, y="Factor", x="Weight", ax=ax, **kwargs)
+    sns.stripplot(data=data, y="Factor", x="Weight", hue="Weight", ax=ax, **kwargs)
 
     for k, v in adata.uns[annotation_key]["mapping"].items():
         factor, sign = k[:-1], k[-1]

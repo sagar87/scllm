@@ -3,16 +3,16 @@ from anndata import AnnData
 from matplotlib.axes import Axes
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from ..tl.factor_annotation import _validate_factors
+from ..tl.validator import _validate_factors
 from .utils import _set_up_cmap, _set_up_plot
 
 
 def factor_embedding(
     adata: AnnData,
     obsm_key: str,
+    annotation_key: str,
     factors: list[str] | str = "all",
     basis: str = "X_umap",
-    annotation_key: str = "scllm_annotation",
     cmap: str = "RdBu",
     colorbar_pos: str = "right",
     colorbar_width: str = "3%",
