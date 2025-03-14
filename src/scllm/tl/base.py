@@ -3,12 +3,20 @@ from functools import partial
 
 import scanpy as sc
 
-from .chains import _description_chain, _term_chain
+from .chains import _description_chain, _term_chain, _terms_chain
 from .utils import _prepare_cluster_data, _prepare_factor_data
 from .validator import _validate_factors, _validate_sign
 
 
 class BaseModel(ABC):
+
+    def __init__(
+        self, preface: str | None, epilogue: str | None, key_added: str, copy: str
+    ):
+        self.preface = preface
+        self.epilogue = epilogue
+        self.key_added = key_added
+        self.copy = copy
 
     @abstractmethod
     def _get_prompt(self):
@@ -17,6 +25,23 @@ class BaseModel(ABC):
     @abstractmethod
     def _get_parser(self):
         raise NotImplementedError()
+
+    @abstractmethod
+    def _validate(self, adata: sc.AnnData):
+        raise NotImplementedError()
+
+    def fit(self, adata, llm):
+        self._validate(adata)
+
+        # prepare the chain
+        data = self._prepare(adata)
+        chain = self._get_chain()
+        self.results_ = chain(llm).invoke(data)
+
+        if self.copy:
+            return self.results_
+
+        self._postprocess(adata)
 
 
 class FactorMixin:
@@ -44,21 +69,11 @@ class FactorMixin:
         data = [{"data": d_i["genes"], **d_i} for d_i in data]
         return data
 
-    def fit(self, adata, llm):
+    def _validate(self, adata):
         num_factors = adata.varm[self.varm_key].shape[1]
         # num_features = adata.shape[1]
         self.sign = _validate_sign(self.sign)
         self.factors = _validate_factors(self.factors, num_factors)
-
-        # prepare the chain
-        data = self._prepare(adata)
-        chain = self._get_chain()
-        self.results_ = chain(llm).invoke(data)
-
-        if self.copy:
-            return self.results_
-
-        adata.uns[self.key_added] = self._postprocess()
 
 
 class ClusterMixin:
@@ -75,19 +90,21 @@ class ClusterMixin:
         )
         return data
 
-    def fit(self, adata, llm):
-        data = self._prepare(adata)
-        chain = self._get_chain()
-        res = chain(llm).invoke(data)
+    def _validate(self, adata):
+        if self.cluster_key not in adata.obs.columns:
+            raise KeyError(f"The key {self.cluster_key} was not found in obs.")
 
-        # save results to anndata
-        # mapping = _prepare_mapping(df, "cluster", "term")
-        # var_names = _prepare_var_names(df, mapping)
 
-        # adata.obs[key_added] = adata.obs[cluster_key].astype(str).map(mapping)
-        # adata.uns[key_added] = {"raw": out, "mapping": mapping, "var_names": var_names}
+class TermsMixin:
+    """
+    Perpares chains for term-like queries.
+    """
 
-        return res
+    def _get_chain(self):
+        prompt = self._get_prompt()
+        parser = self._get_parser()
+
+        return partial(_terms_chain, prompt=prompt, parser=parser)
 
 
 class TermMixin:
