@@ -42,7 +42,13 @@ def mock_adata():
 
 def test_factor_embedding_basic(mock_adata):
     """Test basic factor embedding functionality."""
-    ax = factor_embedding(mock_adata, "X_pca", factors=["0", 1], basis="X_umap")
+    ax = factor_embedding(
+        mock_adata,
+        "X_pca",
+        annotation_key="factor_annotation",
+        factors=["0", 1],
+        basis="X_umap",
+    )
 
     assert isinstance(ax[0], plt.Axes)
     assert len(ax.flatten()) == 2  # Two subplots for two factors
@@ -50,7 +56,13 @@ def test_factor_embedding_basic(mock_adata):
 
 def test_factor_embedding_single_factor(mock_adata):
     """Test factor embedding with single factor."""
-    ax = factor_embedding(mock_adata, "X_pca", factors=["0"], basis="X_umap")
+    ax = factor_embedding(
+        mock_adata,
+        "X_pca",
+        annotation_key="factor_annotation",
+        factors=["0"],
+        basis="X_umap",
+    )
 
     assert isinstance(ax, plt.Axes)
     # assert len(ax.figure.axes) == 1  # Single subplot
@@ -63,7 +75,13 @@ def test_factor_embedding_custom_basis(mock_adata):
     # Add custom basis
     mock_adata.obsm["X_custom"] = np.random.rand(mock_adata.n_obs, 2)
 
-    ax = factor_embedding(mock_adata, "X_pca", factors=0, basis="X_custom")
+    ax = factor_embedding(
+        mock_adata,
+        "X_pca",
+        annotation_key="factor_annotation",
+        factors=0,
+        basis="X_custom",
+    )
 
     assert isinstance(ax, plt.Axes)
     assert ax.get_xlabel() == "X_custom"
@@ -73,7 +91,12 @@ def test_factor_embedding_custom_basis(mock_adata):
 def test_factor_embedding_custom_cmap(mock_adata):
     """Test factor embedding with custom colormap."""
     ax = factor_embedding(
-        mock_adata, "X_pca", factors=0, basis="X_umap", cmap="viridis"
+        mock_adata,
+        "X_pca",
+        annotation_key="factor_annotation",
+        factors=0,
+        basis="X_umap",
+        cmap="viridis",
     )
 
     assert isinstance(ax, plt.Axes)
@@ -85,7 +108,14 @@ def test_factor_embedding_custom_cmap(mock_adata):
 def test_factor_embedding_custom_size(mock_adata):
     """Test factor embedding with custom point size."""
     size = 5
-    ax = factor_embedding(mock_adata, "X_pca", factors=["0"], basis="X_umap", size=size)
+    ax = factor_embedding(
+        mock_adata,
+        "X_pca",
+        annotation_key="factor_annotation",
+        factors=["0"],
+        basis="X_umap",
+        size=size,
+    )
 
     assert isinstance(ax, plt.Axes)
     scatter = ax.collections[0]
@@ -101,6 +131,7 @@ def test_factor_embedding_custom_layout(mock_adata):
     ax = factor_embedding(
         mock_adata,
         "X_pca",
+        annotation_key="factor_annotation",
         factors=["0", "1", "2"],
         basis="X_umap",
         ncols=ncols,
@@ -131,7 +162,13 @@ def test_factor_embedding_no_annotation(mock_adata):
     # Remove annotations
     del mock_adata.uns["factor_annotation"]
 
-    ax = factor_embedding(mock_adata, "X_pca", factors=0, basis="X_umap")
+    ax = factor_embedding(
+        mock_adata,
+        "X_pca",
+        annotation_key="factor_annotation",
+        factors=0,
+        basis="X_umap",
+    )
 
     assert isinstance(ax, plt.Axes)
     assert ax.get_title() == "Factor 0"  # Default title without annotation
@@ -140,20 +177,37 @@ def test_factor_embedding_no_annotation(mock_adata):
 def test_factor_embedding_invalid_basis(mock_adata):
     """Test factor embedding with invalid basis."""
     with pytest.raises(KeyError):
-        factor_embedding(mock_adata, "X_pca", factors=0, basis="invalid_basis")
+        factor_embedding(
+            mock_adata,
+            "X_pca",
+            annotation_key="factor_annotation",
+            factors=0,
+            basis="invalid_basis",
+        )
 
 
 def test_factor_embedding_invalid_factor(mock_adata):
     """Test factor embedding with invalid factor."""
     with pytest.raises(IndexError):
-        factor_embedding(mock_adata, "X_pca", factors=10, basis="X_umap")
+        factor_embedding(
+            mock_adata,
+            "X_pca",
+            annotation_key="factor_annotation",
+            factors=10,
+            basis="X_umap",
+        )
 
 
 def test_factor_embedding_custom_ax(mock_adata):
     """Test factor embedding with custom axes."""
     fig, ax = plt.subplots()
     result_ax = factor_embedding(
-        mock_adata, "X_pca", factors=["0"], basis="X_umap", ax=ax
+        mock_adata,
+        "X_pca",
+        annotation_key="factor_annotation",
+        factors=["0"],
+        basis="X_umap",
+        ax=ax,
     )
 
     # assert result_ax == ax
