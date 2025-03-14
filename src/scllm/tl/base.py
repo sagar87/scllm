@@ -45,6 +45,8 @@ class BaseModel(ABC):
 
         self._postprocess(adata)
 
+        return self
+
 
 class FactorMixin:
     def _prepare(self, adata: sc.AnnData):
