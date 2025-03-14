@@ -43,6 +43,39 @@ def _term_chain(llm, prompt, parser):
             }
         )
         | RunnableLambda(flatten)
+        | RunnableParallel(
+            {
+                "pass": RunnablePassthrough(),
+                "union": RunnableLambda(
+                    lambda x: list(set(x["target_features"]) & set(x["pass_data"]))
+                ),
+            }
+        )
+        | RunnableLambda(flatten)
+        | RunnableLambda(prune)
+    )
+
+
+def _terms_chain(llm, prompt, parser):
+    """
+    Extracts information from the data field and processes
+    """
+    return RunnableEach(
+        bound=RunnableParallel(
+            {
+                "pass": RunnablePassthrough(),
+                "target": RunnableLambda(
+                    lambda x: prompt.format_prompt(
+                        data=x["data"],
+                        format_instructions=parser.get_format_instructions(),
+                    )
+                )
+                | llm
+                | parser
+                | RunnableLambda(lambda x: x.model_dump()),
+            }
+        )
+        | RunnableLambda(flatten)
         | RunnableLambda(prune)
     )
 
