@@ -2,7 +2,6 @@ from typing import Literal
 
 import numpy as np
 import pandas as pd
-from langchain_core.output_parsers.string import StrOutputParser
 
 from .base import (
     BaseModel,
@@ -139,9 +138,6 @@ class ClusterDescription(ClusterMixin, DescriptionMixin, BaseModel):
             format=False,
         )
 
-    def _get_parser(self):
-        return StrOutputParser()
-
     def _postprocess(self, adata):
         mapping = {item["group"]: np.str_(item["target"]) for item in self.results_}
         adata.uns[self.key_added] = {MAPPING: mapping}
@@ -270,6 +266,3 @@ class FactorDescription(FactorMixin, DescriptionMixin, BaseModel):
             epilogue=self.epilogue,
             format=False,
         )
-
-    def _get_parser(self):
-        return StrOutputParser()

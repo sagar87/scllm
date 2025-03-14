@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from functools import partial
 
 import scanpy as sc
+from langchain_core.output_parsers.string import StrOutputParser
 
 from .chains import _description_chain, _term_chain, _terms_chain
 from .utils import _prepare_cluster_data, _prepare_factor_data
@@ -126,3 +127,6 @@ class DescriptionMixin:
         parser = self._get_parser()
 
         return partial(_description_chain, prompt=prompt, parser=parser)
+
+    def _get_parser(self):
+        return StrOutputParser()
