@@ -15,6 +15,7 @@ from .prompts import _term_prompt
 from .utils import _prepare_mapping, _prepare_var_names
 
 MAPPING = "mapping"
+FEATURES = "features"
 
 
 class ClusterAnnotation(ClusterMixin, TermMixin, BaseModel):
@@ -55,7 +56,7 @@ class ClusterAnnotation(ClusterMixin, TermMixin, BaseModel):
         var_names = _prepare_var_names(df, mapping)
 
         adata.obs[self.key_added] = adata.obs[self.cluster_key].astype(str).map(mapping)
-        adata.uns[self.key_added] = {MAPPING: mapping, "var_names": var_names}
+        adata.uns[self.key_added] = {MAPPING: mapping, FEATURES: var_names}
 
 
 class ClusterTerms(ClusterMixin, TermsMixin, BaseModel):
@@ -90,8 +91,20 @@ class ClusterTerms(ClusterMixin, TermsMixin, BaseModel):
         )
 
     def _postprocess(self, adata):
+        # term mapping
         mapping = {item["group"]: item["term"] for item in self.results_}
-        adata.uns[self.key_added] = {MAPPING: mapping}
+        # extract features for each term
+        features = {}
+        for item in self.results_:
+            term_dict = {}
+            for i, term in enumerate(item["term"]):
+                # double check that the features were really in the data
+                union = list(set(item["features"][i]) & set(item["data"]))
+                term_dict[term] = union
+
+            features[item["group"]] = term_dict
+
+        adata.uns[self.key_added] = {MAPPING: mapping, FEATURES: features}
         # pass
 
 
@@ -174,8 +187,9 @@ class FactorAnnotation(TermMixin, FactorMixin, BaseModel):
             id=lambda df: df.apply(lambda row: row.factor + row.sign, 1)
         )
         mapping = _prepare_mapping(df, "id", "term")
+        var_names = _prepare_var_names(df, mapping)
 
-        adata.uns[self.key_added] = {MAPPING: mapping}
+        adata.uns[self.key_added] = {MAPPING: mapping, FEATURES: var_names}
 
 
 class FactorTerms(TermsMixin, FactorMixin, BaseModel):
@@ -215,6 +229,24 @@ class FactorTerms(TermsMixin, FactorMixin, BaseModel):
             preface=self.preface, prologue=prologue, epilogue=self.epilogue, format=True
         )
 
+    def _postprocess(self, adata):
+        # term mapping
+        mapping = {
+            item["factor"] + item["sign"]: item["term"] for item in self.results_
+        }
+        # extract features for each term
+        features = {}
+        for item in self.results_:
+            term_dict = {}
+            for i, term in enumerate(item["term"]):
+                # double check that the features were really in the data
+                union = list(set(item["features"][i]) & set(item["data"]))
+                term_dict[term] = union
+
+            features[item["factor"] + item["sign"]] = term_dict
+
+        adata.uns[self.key_added] = {MAPPING: mapping, FEATURES: features}
+
 
 class FactorDescription(FactorMixin, DescriptionMixin, BaseModel):
     def __init__(
@@ -250,3 +282,10 @@ class FactorDescription(FactorMixin, DescriptionMixin, BaseModel):
             epilogue=self.epilogue,
             format=False,
         )
+
+    def _postprocess(self, adata):
+        mapping = {
+            item["factor"] + item["sign"]: np.str_(item["target"])
+            for item in self.results_
+        }
+        adata.uns[self.key_added] = {MAPPING: mapping}
