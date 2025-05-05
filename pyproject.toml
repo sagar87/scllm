@@ -1,6 +1,6 @@
 [project]
 name = "scllm"
-version = "0.2.0"
+version = "0.2.1"
 description = "scllm is a Python package for single-cell analysis using LLMs."
 readme = "README.md"
 authors = [
