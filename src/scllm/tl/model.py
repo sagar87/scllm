@@ -22,6 +22,7 @@ class ClusterAnnotation(ClusterMixin, TermMixin, BaseModel):
     def __init__(
         self,
         cluster_key: str,
+        groups: list[str] | str | None = None,
         top_items: int = 30,
         num_samples: int = 1,
         term: str = "cell type",
@@ -37,6 +38,7 @@ class ClusterAnnotation(ClusterMixin, TermMixin, BaseModel):
         self.cluster_key = cluster_key
         self.top_items = top_items
         self.num_samples = num_samples
+        self.groups = groups
 
         # prompot related
         self.term = term
@@ -63,6 +65,7 @@ class ClusterTerms(ClusterMixin, TermsMixin, BaseModel):
     def __init__(
         self,
         cluster_key: str,
+        groups: list[str] | str | None = None,
         preface: str = "You are an expert computational biologist who analysis single-cell RNA-seq data",
         term: str = "biological processes",
         feature: str = "gene",
@@ -77,6 +80,7 @@ class ClusterTerms(ClusterMixin, TermsMixin, BaseModel):
             preface=preface, epilogue=epilogue, key_added=key_added, copy=copy
         )
         self.cluster_key = cluster_key
+        self.groups = groups
         self.term = term
         self.feature = feature
         self.top_items = top_items
