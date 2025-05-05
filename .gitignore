@@ -11,3 +11,4 @@ docs/notebooks/raw
 .env
 scratch.ipynb
 scratch
+.safety-project.ini

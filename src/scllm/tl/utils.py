@@ -68,6 +68,7 @@ def _prepare_factor_data(
 def _prepare_cluster_data(
     adata: sc.AnnData,
     cluster_key: str,
+    groups: list[str] | str | None = None,
     top_items: int = 10,
     num_samples: int = 1,
     **kwargs,
@@ -81,9 +82,15 @@ def _prepare_cluster_data(
 
     genes = sc.get.rank_genes_groups_df(
         adata,
-        group=adata.obs[cluster_key].unique(),
+        group=groups,
         key=f"{cluster_key}_rank_genes_groups",
     )
+
+    if isinstance(groups, str):
+        genes = genes.assign(group=groups)
+
+    if isinstance(groups, list) and len(groups) == 1:
+        genes = genes.assign(group=groups[0])
 
     data = pd.concat(
         [

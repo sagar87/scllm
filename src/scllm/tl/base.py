@@ -89,6 +89,7 @@ class ClusterMixin:
         data = _prepare_cluster_data(
             adata,
             self.cluster_key,
+            groups=self.groups,
             top_items=self.top_items,
             num_samples=self.num_samples,
         )
