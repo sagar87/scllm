@@ -112,6 +112,7 @@ class ClusterDescription(ClusterMixin, DescriptionMixin, BaseModel):
     def __init__(
         self,
         cluster_key: str,
+        groups: list[str] | str | None = None,
         preface: str = "You are an expert computational biologist who analysis single-cell RNA-seq data",
         feature: str = "genes",
         epilogue: (
@@ -125,6 +126,7 @@ class ClusterDescription(ClusterMixin, DescriptionMixin, BaseModel):
             preface=preface, epilogue=epilogue, key_added=key_added, copy=copy
         )
         self.cluster_key = cluster_key
+        self.groups = groups
         self.top_items = top_items
         self.num_samples = 1
 
